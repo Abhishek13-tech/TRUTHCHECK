@@ -1,0 +1,10 @@
+Flask
+tensorflow
+numpy
+pandas
+scikit-learn
+opencv-python
+Pillow
+sentence-transformers
+torch
+torchvision

@@ -1,0 +1,1 @@
+// TRUTHCHECK frontend logic
