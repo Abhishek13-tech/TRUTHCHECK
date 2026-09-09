@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>TRUTHCHECK</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
-    <h1>TRUTHCHECK</h1>
-    <p>AI & Content Authenticity Platform</p>
+
+    <div class="container">
+
+        <header>
+            <h1>TRUTHCHECK</h1>
+            <p>AI & Content Authenticity Platform</p>
+        </header>
+
+        <main class="card">
+
+            <h2>Check Your Content</h2>
+
+            <p class="description">
+                Upload an image and enter its caption to analyze
+                content authenticity.
+            </p>
+
+            {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/check" method="POST" enctype="multipart/form-data">
+
+                <label for="image">Upload Image</label>
+
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept=".png,.jpg,.jpeg,.webp"
+                    required
+                >
+
+                <label for="caption">Caption / Text</label>
+
+                <textarea
+                    id="caption"
+                    name="caption"
+                    placeholder="Enter the caption or text associated with the image..."
+                ></textarea>
+
+                <button type="submit">
+                    CHECK AUTHENTICITY
+                </button>
+
+            </form>
+
+        </main>
+
+        <footer>
+            <p>TRUTHCHECK © 2026</p>
+        </footer>
+
+    </div>
+
 </body>
+
 </html>

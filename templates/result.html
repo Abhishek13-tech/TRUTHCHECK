@@ -1,1 +1,81 @@
 <!-- Result page -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TRUTHCHECK Result</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>TRUTHCHECK</h1>
+            <p>Authenticity Analysis Result</p>
+        </header>
+
+        <main class="result-card">
+
+            <div class="image-section">
+
+                <h2>Uploaded Image</h2>
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
+                    alt="Uploaded Image"
+                    class="uploaded-image"
+                >
+
+            </div>
+
+            <div class="caption-section">
+
+                <h2>Caption</h2>
+
+                <p class="caption">
+                    {{ caption if caption else "No caption provided." }}
+                </p>
+
+            </div>
+
+            <div class="analysis-grid">
+
+                <div class="analysis-box">
+                    <h3>Image Authenticity</h3>
+                    <p>{{ image_result }}</p>
+                </div>
+
+                <div class="analysis-box">
+                    <h3>Text Authenticity</h3>
+                    <p>{{ text_result }}</p>
+                </div>
+
+            </div>
+
+            <div class="final-result">
+
+                <h2>Overall Result</h2>
+
+                <p>
+                    {{ final_result }}
+                </p>
+
+            </div>
+
+            <a href="/" class="back-button">
+                Check Another Content
+            </a>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
