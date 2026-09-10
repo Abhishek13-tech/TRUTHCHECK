@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
+from modules.text_detector import detect_text
+from modules.image_detector import detect_image
 import os
 
 app = Flask(__name__)
@@ -43,18 +45,27 @@ def check_content():
         )
 
     filename = secure_filename(image.filename)
-    image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+    image_path = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        filename
+    )
 
     image.save(image_path)
 
-    # AI modules will be connected here in the next phase
-    image_result = "Analysis Pending"
-    text_result = "Analysis Pending"
-    final_result = "Waiting for AI models"
+    # AI Image Detection
+    image_result = detect_image(image_path)
+
+    text_result = detect_text(caption)
+
+    if image_result.get("status") == "success":
+        final_result = image_result["label"]
+    else:
+        final_result = "Image analysis failed"
 
     return render_template(
         "result.html",
-        image_path=image_path,
+        image_filename=filename,
         caption=caption,
         image_result=image_result,
         text_result=text_result,
