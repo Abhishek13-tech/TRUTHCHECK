@@ -52,9 +52,42 @@
                 </div>
 
                 <div class="analysis-box">
-                    <h3>Text Authenticity</h3>
-                    <p>{{ text_result }}</p>
-                </div>
+    <h3>Text Authenticity</h3>
+
+    {% if text_result %}
+        <p>
+            <strong>Result:</strong>
+            {{ text_result.ai_detection.label }}
+        </p>
+
+        <p>
+            <strong>Confidence:</strong>
+            {{ text_result.ai_detection.confidence }}%
+        </p>
+
+        {% if text_result.highest_match %}
+            <p>
+                <strong>Highest Similarity:</strong>
+                {{ text_result.highest_match.similarity }}%
+            </p>
+
+            <p>
+                <strong>Matching Source:</strong>
+                {{ text_result.highest_match.filename }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ text_result.highest_match.status }}
+            </p>
+        {% else %}
+            <p>No reference text found.</p>
+        {% endif %}
+
+    {% else %}
+        <p>No text provided.</p>
+    {% endif %}
+</div>
 
             </div>
 

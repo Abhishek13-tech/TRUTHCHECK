@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
+from modules.text_analysis import analyze_text
 
 app = Flask(__name__)
 
@@ -29,6 +30,7 @@ def check_content():
 
     image = request.files.get("image")
     caption = request.form.get("caption", "").strip()
+    text_result = analyze_text(caption) if caption else None
 
     if not image or image.filename == "":
         return render_template(
@@ -47,10 +49,24 @@ def check_content():
 
     image.save(image_path)
 
-    # AI modules will be connected here in the next phase
+        # AI modules will be connected here
     image_result = "Analysis Pending"
-    text_result = "Analysis Pending"
-    final_result = "Waiting for AI models"
+
+    if text_result:
+        if text_result["highest_match"]:
+            final_result = (
+                f"Text analysis complete. "
+                f"AI result: {text_result['ai_detection']['label']}. "
+                f"Highest similarity: "
+                f"{text_result['highest_match']['similarity']}%."
+            )
+        else:
+            final_result = (
+                f"Text analysis complete. "
+                f"AI result: {text_result['ai_detection']['label']}."
+            )
+    else:
+        final_result = "No text provided."
 
     return render_template(
         "result.html",
