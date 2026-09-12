@@ -27,6 +27,7 @@
 
 <div class="result-layout">
 
+<<<<<<< HEAD
   <!-- Verdict Hero -->
   <div class="verdict-hero">
     <div class="verdict-banner {{ banner_class }}">
@@ -45,6 +46,94 @@
       </div>
     </div>
   </div>
+=======
+        <main class="result-card">
+
+            <div class="image-section">
+
+                <h2>Uploaded Image</h2>
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
+                    alt="Uploaded Image"
+                    class="uploaded-image"
+                >
+
+            </div>
+
+            <div class="caption-section">
+
+                <h2>Caption</h2>
+
+                <p class="caption">
+                    {{ caption if caption else "No caption provided." }}
+                </p>
+
+            </div>
+
+            <div class="analysis-grid">
+
+                <div class="analysis-box">
+                    <h3>Image Authenticity</h3>
+                    <p>{{ image_result }}</p>
+                </div>
+
+                <div class="analysis-box">
+    <h3>Text Authenticity</h3>
+
+    {% if text_result %}
+        <p>
+            <strong>Result:</strong>
+            {{ text_result.ai_detection.label }}
+        </p>
+
+        <p>
+            <strong>Confidence:</strong>
+            {{ text_result.ai_detection.confidence }}%
+        </p>
+
+        {% if text_result.highest_match %}
+            <p>
+                <strong>Highest Similarity:</strong>
+                {{ text_result.highest_match.similarity }}%
+            </p>
+
+            <p>
+                <strong>Matching Source:</strong>
+                {{ text_result.highest_match.filename }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ text_result.highest_match.status }}
+            </p>
+        {% else %}
+            <p>No reference text found.</p>
+        {% endif %}
+
+    {% else %}
+        <p>No text provided.</p>
+    {% endif %}
+</div>
+
+            </div>
+
+            <div class="final-result">
+
+                <h2>Overall Result</h2>
+
+                <p>
+                    {{ final_result }}
+                </p>
+
+            </div>
+
+            <a href="/" class="back-button">
+                Check Another Content
+            </a>
+
+        </main>
+>>>>>>> origin/sanjeev-text-module
 
   <!-- Trust Score & Explanation -->
   <div class="trust-section animate-fade-up delay-100">
