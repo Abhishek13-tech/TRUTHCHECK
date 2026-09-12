@@ -84,7 +84,12 @@
           {% endif %}
         </div>
         <div class="trust-factor">
-          <i data-lucide="check" style="stroke:var(--success);"></i> File format ({{ image_path.split('.')[-1] | upper }}) is standard.
+          <i data-lucide="check" style="stroke:var(--success);"></i> 
+          {% if image_path %}
+          File format ({{ image_path.split('.')[-1] | upper }}) is standard.
+          {% else %}
+          Text input analyzed successfully.
+          {% endif %}
         </div>
       </div>
     </div>
