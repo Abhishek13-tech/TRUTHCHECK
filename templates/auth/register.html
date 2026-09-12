@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your free TRUTHCHECK account">
+  <title>Register — TRUTHCHECK</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236c63ff'/><path d='M8 16l6 6L24 10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/design-tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body>
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <div class="auth-page">
+
+    <!-- Branding -->
+    <div class="auth-branding">
+      <div class="auth-branding-inner">
+        <div class="auth-logo animate-fade-up">
+          <div class="auth-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <span class="auth-logo-text">TRUTHCHECK</span>
+        </div>
+
+        <h1 class="auth-headline animate-fade-up delay-100">
+          Start Detecting <span class="gradient-text">Fake Content</span><br>for Free
+        </h1>
+
+        <p class="auth-tagline animate-fade-up delay-200">
+          Join TRUTHCHECK and start fighting misinformation with powerful AI tools. Free plan includes 50 checks/month.
+        </p>
+
+        <div class="auth-features animate-fade-up delay-300">
+          <div class="auth-feature">
+            <div class="auth-feature-icon"><i data-lucide="zap"></i></div>
+            <span class="auth-feature-text">Instant analysis results</span>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon"><i data-lucide="bar-chart-2"></i></div>
+            <span class="auth-feature-text">Detailed confidence scores</span>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon"><i data-lucide="archive"></i></div>
+            <span class="auth-feature-text">Full analysis history saved</span>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon"><i data-lucide="lock"></i></div>
+            <span class="auth-feature-text">Your data stays private</span>
+          </div>
+        </div>
+      </div>
+      <div class="auth-float-card card-real">✅ Image: Authentic</div>
+      <div class="auth-float-card card-fake">⚠️ Text: Misleading</div>
+      <div class="auth-float-card card-score">🛡️ 99.2% Accuracy</div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-card">
+
+        <div class="auth-card-header">
+          <h2 class="auth-card-title">Create account</h2>
+          <p class="auth-card-subtitle">
+            Already have one?
+            <a href="{{ url_for('login') }}">Sign in →</a>
+          </p>
+        </div>
+
+        {% if error %}
+        <div class="auth-alert error">
+          <i data-lucide="alert-circle"></i>
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <form class="auth-form" action="{{ url_for('register') }}" method="POST" id="reg-form">
+
+          <div class="form-group">
+            <label class="form-label" for="name">Full name</label>
+            <div class="input-icon-wrapper">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="name" name="name" class="form-input"
+                placeholder="Your full name" required autocomplete="name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email address</label>
+            <div class="input-icon-wrapper">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="email" name="email" class="form-input"
+                placeholder="you@example.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-icon-wrapper">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="password" name="password" class="form-input"
+                placeholder="Min 8 characters" required id="pass-input" autocomplete="new-password">
+              <button type="button" class="password-toggle" id="pass-toggle">
+                <i data-lucide="eye" id="eye-icon"></i>
+              </button>
+            </div>
+            <!-- Password Strength -->
+            <div class="password-strength" id="strength-meter" style="display:none;">
+              <div class="strength-bars">
+                <div class="strength-bar" id="bar1"></div>
+                <div class="strength-bar" id="bar2"></div>
+                <div class="strength-bar" id="bar3"></div>
+                <div class="strength-bar" id="bar4"></div>
+              </div>
+              <div class="strength-label" id="strength-label"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirm">Confirm password</label>
+            <div class="input-icon-wrapper">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="confirm" name="confirm" class="form-input"
+                placeholder="Re-enter password" required autocomplete="new-password">
+            </div>
+          </div>
+
+          <div style="margin-bottom: var(--space-5);">
+            <label class="checkbox-label">
+              <input type="checkbox" name="terms" required>
+              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="reg-btn">
+            <i data-lucide="user-plus"></i>
+            Create Free Account
+          </button>
+
+        </form>
+
+        <div class="divider-text" style="margin: 1.5rem 0;">or sign up with</div>
+
+        <div class="social-login">
+          <button class="btn-social" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Password toggle
+    const toggle = document.getElementById('pass-toggle');
+    const passInput = document.getElementById('pass-input') || document.getElementById('password');
+    if (toggle && passInput) {
+      toggle.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        document.getElementById('eye-icon').setAttribute('data-lucide', isPass ? 'eye-off' : 'eye');
+        lucide.createIcons();
+      });
+    }
+
+    // Password strength meter
+    const pwInput = document.getElementById('password');
+    const meter = document.getElementById('strength-meter');
+    const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3'), document.getElementById('bar4')];
+    const label = document.getElementById('strength-label');
+
+    if (pwInput && meter) {
+      pwInput.addEventListener('input', () => {
+        const val = pwInput.value;
+        meter.style.display = val ? 'block' : 'none';
+
+        let strength = 0;
+        if (val.length >= 8) strength++;
+        if (/[A-Z]/.test(val)) strength++;
+        if (/[0-9]/.test(val)) strength++;
+        if (/[^a-zA-Z0-9]/.test(val)) strength++;
+
+        const cls = strength <= 1 ? 'weak' : strength <= 2 ? 'medium' : 'strong';
+        const labels = { weak: 'Weak', medium: 'Fair', strong: 'Strong' };
+
+        bars.forEach((bar, i) => {
+          bar.className = 'strength-bar';
+          if (i < strength) bar.classList.add('filled', cls);
+        });
+
+        label.textContent = labels[cls] || '';
+        label.style.color = cls === 'strong' ? 'var(--success)' : cls === 'medium' ? 'var(--warning)' : 'var(--danger)';
+      });
+    }
+
+    // Submit loading
+    const form = document.getElementById('reg-form');
+    const btn = document.getElementById('reg-btn');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        const p1 = document.getElementById('password').value;
+        const p2 = document.getElementById('confirm').value;
+        if (p1 !== p2) {
+          e.preventDefault();
+          alert('Passwords do not match');
+          return;
+        }
+        btn.classList.add('loading');
+        btn.disabled = true;
+      });
+    }
+  </script>
+</body>
+</html>

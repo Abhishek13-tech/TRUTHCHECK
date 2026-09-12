@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Text Check{% endblock %}
+{% block breadcrumb %}Text Check{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checker.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade-up">
+  <h1 class="page-title">Text Authenticity Check</h1>
+  <p class="page-subtitle">Analyze headlines, articles, social media posts, and captions for misinformation.</p>
+</div>
+
+<form action="{{ url_for('text_check_submit') }}" method="POST" id="text-check-form">
+  <div class="checker-layout">
+
+    <!-- Main Panel -->
+    <div class="checker-main">
+
+      <!-- Text Input -->
+      <div class="card animate-fade-up delay-100">
+        <div class="card-title">
+          <i data-lucide="file-text" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
+          Enter Text to Analyze
+        </div>
+
+        <div class="text-check-area">
+          <textarea
+            id="text-input" name="text"
+            class="form-textarea"
+            placeholder="Paste a news headline, article excerpt, social media caption, or any text you want to check for authenticity..."
+            style="border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none;"
+          ></textarea>
+          <div class="text-check-toolbar">
+            <div class="text-stats">
+              <span class="text-stat"><span id="char-count">0</span> chars</span>
+              <span class="text-stat"><span id="word-count">0</span> words</span>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" class="btn btn-glass btn-sm" id="paste-btn">
+                <i data-lucide="clipboard"></i> Paste
+              </button>
+              <button type="button" class="btn btn-glass btn-sm" id="clear-btn">
+                <i data-lucide="trash-2"></i> Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Language & Options Row -->
+      <div class="card animate-fade-up delay-200">
+        <div class="card-title" style="margin-bottom: var(--space-4);">Analysis Options</div>
+        <div class="grid-2">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Language</label>
+            <select class="form-select" name="language">
+              <option value="auto">Auto-detect</option>
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Content Type</label>
+            <select class="form-select" name="content_type">
+              <option value="auto">Auto-detect</option>
+              <option value="news">News Headline</option>
+              <option value="social">Social Media Post</option>
+              <option value="caption">Image Caption</option>
+              <option value="article">Article Excerpt</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div class="checker-sidebar">
+
+      <div class="submit-section animate-fade-up delay-100">
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn">
+          <i data-lucide="scan-text"></i>
+          Analyze Text
+        </button>
+        <div class="submit-label">
+          <i data-lucide="lock"></i>
+          Analysis takes ~3 seconds
+        </div>
+      </div>
+
+      <div class="model-card animate-fade-up delay-200">
+        <div class="model-card-title">AI Models Active</div>
+        <div class="model-row">
+          <span class="model-name">NLP Classifier</span>
+          <span class="model-status">● Ready</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name">Sentiment Analysis</span>
+          <span class="model-status">● Ready</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name">Fact Cross-check</span>
+          <span class="model-status" style="color: var(--warning);">◐ Beta</span>
+        </div>
+      </div>
+
+      <div class="tips-card animate-fade-up delay-300">
+        <div class="tips-title">
+          <i data-lucide="lightbulb"></i>
+          Tips for best results
+        </div>
+        <div class="tip-item">Paste the complete headline or article intro</div>
+        <div class="tip-item">Context helps — include surrounding sentences</div>
+        <div class="tip-item">Works best with factual claims and news content</div>
+        <div class="tip-item">Minimum 10 words for accurate analysis</div>
+        <div class="tip-item">Maximum 5,000 characters supported</div>
+      </div>
+
+      <!-- Example Texts -->
+      <div class="card animate-fade-up delay-400">
+        <div class="card-title" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">Try Examples</div>
+        <div class="flex flex-col gap-2">
+          <button type="button" class="btn btn-glass btn-sm" onclick="document.getElementById('text-input').value='Breaking: Scientists discover cure for cancer using common household items. Experts confirm 100% success rate in trials.'">
+            Misleading headline
+          </button>
+          <button type="button" class="btn btn-glass btn-sm" onclick="document.getElementById('text-input').value='NASA confirms Mars Perseverance rover has successfully collected its 23rd rock sample from the Jezero Crater region.'">
+            Authentic news
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Paste button
+  document.getElementById('paste-btn')?.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      document.getElementById('text-input').value = text;
+      document.getElementById('text-input').dispatchEvent(new Event('input'));
+    } catch (e) {
+      if (window.showToast) showToast('Clipboard access denied', 'error');
+    }
+  });
+
+  // Clear button
+  document.getElementById('clear-btn')?.addEventListener('click', () => {
+    document.getElementById('text-input').value = '';
+    document.getElementById('text-input').dispatchEvent(new Event('input'));
+  });
+</script>
+{% endblock %}

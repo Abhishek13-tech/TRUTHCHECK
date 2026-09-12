@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}About TRUTHCHECK{% endblock %}
+{% block breadcrumb %}About{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade-up" style="text-align:center; max-width: 800px; margin: 0 auto 3rem auto;">
+  <div style="width:64px;height:64px;background:var(--grad-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem auto;box-shadow:0 12px 30px var(--accent-primary-glow);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;">
+      <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+      <path d="M9 12l2 2 4-4"/>
+    </svg>
+  </div>
+  <h1 class="page-title" style="font-size:3rem;margin-bottom:1rem;">About TRUTHCHECK</h1>
+  <p class="page-subtitle" style="font-size:1.1rem;line-height:1.7;">
+    TRUTHCHECK is an advanced AI-powered platform designed to combat misinformation, deepfakes, and manipulated media in the digital age.
+  </p>
+</div>
+
+<!-- Architecture / How it works -->
+<div class="card animate-fade-up delay-100 mb-6">
+  <div class="card-title text-center mb-6">How It Works</div>
+
+  <div class="steps">
+    <div class="step done">
+      <div class="step-num"><i data-lucide="upload" style="width:16px;height:16px;"></i></div>
+      <div class="step-label">Upload Content</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step active">
+      <div class="step-num">2</div>
+      <div class="step-label">AI Analysis</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-label">Trust Score Generation</div>
+    </div>
+  </div>
+
+  <div class="grid-3 mt-6">
+    <div style="text-align:center;padding:1.5rem;">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--accent-primary-soft);color:var(--accent-primary);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem auto;">
+        <i data-lucide="image"></i>
+      </div>
+      <h3 style="font-size:16px;margin-bottom:8px;color:var(--text-primary);">Computer Vision</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Analyzes pixel-level inconsistencies, noise patterns, and compression artifacts to detect image manipulation and GAN-generated deepfakes.</p>
+    </div>
+    <div style="text-align:center;padding:1.5rem;">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--accent-secondary-soft);color:var(--accent-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem auto;">
+        <i data-lucide="file-text"></i>
+      </div>
+      <h3 style="font-size:16px;margin-bottom:8px;color:var(--text-primary);">Natural Language Processing</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Evaluates text semantics, sentiment polarization, and stylistic features typical of clickbait and generated misinformation.</p>
+    </div>
+    <div style="text-align:center;padding:1.5rem;">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--warning-soft);color:var(--warning);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem auto;">
+        <i data-lucide="git-merge"></i>
+      </div>
+      <h3 style="font-size:16px;margin-bottom:8px;color:var(--text-primary);">Multimodal Aggregation</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Combines signals from both visual and textual models to produce a unified, highly accurate Trust Score.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Technology Stack -->
+<div class="grid-2 mb-6">
+  <div class="card animate-fade-up delay-200">
+    <div class="card-title">Technology Stack</div>
+    <div class="flex-col gap-4 mt-4">
+      <div class="flex items-center justify-between py-2 border-b border-glass">
+        <span style="color:var(--text-secondary);font-weight:500;">Backend Framework</span>
+        <span class="badge" style="background:var(--bg-glass);border:1px solid var(--border-glass);">Flask / Python</span>
+      </div>
+      <div class="flex items-center justify-between py-2 border-b border-glass">
+        <span style="color:var(--text-secondary);font-weight:500;">Image Model</span>
+        <span class="badge" style="background:var(--accent-primary-soft);color:var(--accent-primary);">ViT / ResNet-50</span>
+      </div>
+      <div class="flex items-center justify-between py-2 border-b border-glass">
+        <span style="color:var(--text-secondary);font-weight:500;">Text Model</span>
+        <span class="badge" style="background:var(--accent-secondary-soft);color:var(--accent-secondary);">RoBERTa / DistilBERT</span>
+      </div>
+      <div class="flex items-center justify-between py-2">
+        <span style="color:var(--text-secondary);font-weight:500;">Frontend UI</span>
+        <span class="badge" style="background:var(--success-soft);color:var(--success);">HTML5 / CSS3 / Vanilla JS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card animate-fade-up delay-300 bg-glass" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3rem;">
+    <div style="font-size:48px;font-family:var(--font-display);font-weight:800;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;">Open Source</div>
+    <p style="color:var(--text-muted);margin-bottom:2rem;max-width:300px;line-height:1.6;">We believe transparency is key to fighting misinformation. Our core models and tools are open source.</p>
+    <a href="#" class="btn btn-outline"><i data-lucide="github"></i> View on GitHub</a>
+  </div>
+</div>
+
+{% endblock %}

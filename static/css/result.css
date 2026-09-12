@@ -1,0 +1,181 @@
+/* ============================================================
+   TRUTHCHECK — Result Page
+   ============================================================ */
+
+.result-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── Verdict Hero ────────────────────────────────────────── */
+.verdict-hero {
+  text-align: center;
+  animation: fadeInDown 0.5s ease;
+}
+
+/* ── Analysis Grid ───────────────────────────────────────── */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@media (max-width: 640px) { .analysis-grid { grid-template-columns: 1fr; } }
+
+/* ── Image + Caption Side-by-Side ────────────────────────── */
+.media-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@media (max-width: 640px) { .media-section { grid-template-columns: 1fr; } }
+
+.uploaded-image-card img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  max-height: 280px;
+  background: rgba(0,0,0,0.3);
+}
+
+.caption-text {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-style: italic;
+}
+
+/* ── Module Result Cards ─────────────────────────────────── */
+.module-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: relative;
+  overflow: hidden;
+}
+
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--grad-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.module-card.real-card::before { background: var(--success); }
+.module-card.fake-card::before { background: var(--danger); }
+.module-card.pending-card::before { background: var(--warning); }
+
+.module-header {
+  display: flex; align-items: center; gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.module-icon {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.module-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+
+.module-name {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.module-result {
+  font-size: var(--text-2xl);
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+.module-card.real-card    .module-result { color: var(--success); }
+.module-card.fake-card    .module-result { color: var(--danger); }
+.module-card.pending-card .module-result { color: var(--warning); }
+
+.module-confidence {
+  margin-top: var(--space-3);
+}
+
+.confidence-label {
+  display: flex; justify-content: space-between;
+  font-size: var(--text-xs); color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.confidence-bar-wrapper {
+  height: 6px;
+  background: var(--border-glass);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.confidence-bar {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.module-card.real-card    .confidence-bar { background: var(--success); box-shadow: 0 0 8px var(--success-glow); }
+.module-card.fake-card    .confidence-bar { background: var(--danger);  box-shadow: 0 0 8px var(--danger-glow); }
+.module-card.pending-card .confidence-bar { background: var(--warning); }
+
+/* ── Trust Score Section ─────────────────────────────────── */
+.trust-section {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+@media (max-width: 640px) { .trust-section { flex-direction: column; gap: var(--space-4); } }
+
+.trust-info { flex: 1; }
+
+.trust-info-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.trust-info-desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-4);
+}
+
+.trust-factors { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.trust-factor {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--text-sm); color: var(--text-secondary);
+}
+
+.trust-factor svg {
+  width: 14px; height: 14px;
+  stroke: var(--accent-primary); fill: none;
+  flex-shrink: 0;
+}
+
+/* ── CTA Actions ─────────────────────────────────────────── */
+.result-actions {
+  display: flex; gap: var(--space-3); justify-content: center;
+  flex-wrap: wrap;
+}

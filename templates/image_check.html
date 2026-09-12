@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Image Check{% endblock %}
+{% block breadcrumb %}Image Check{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checker.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade-up">
+  <h1 class="page-title">Image Authenticity Check</h1>
+  <p class="page-subtitle">Upload an image and caption to detect deepfakes, manipulation, and misinformation.</p>
+</div>
+
+{% if error %}
+<div class="auth-alert error animate-fade-up" style="max-width: 700px; margin-bottom: 1.5rem;">
+  <i data-lucide="alert-circle"></i>
+  {{ error }}
+</div>
+{% endif %}
+
+<form action="{{ url_for('check_content') }}" method="POST" enctype="multipart/form-data" id="check-form">
+
+  <div class="checker-layout">
+
+    <!-- ── Main Panel ─────────────────────────────────── -->
+    <div class="checker-main">
+
+      <!-- Upload Zone -->
+      <div class="upload-zone animate-fade-up delay-100">
+        <div class="card-title" style="margin-bottom: var(--space-4);">
+          <i data-lucide="upload-cloud" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
+          Upload Image
+        </div>
+
+        <!-- Drag-Drop Box -->
+        <div class="upload-box" id="image-upload-box">
+          <div class="upload-icon">
+            <i data-lucide="image"></i>
+          </div>
+          <div class="upload-title">Drag & Drop or Click to Upload</div>
+          <div class="upload-subtitle">Drop your image here, or click to browse files</div>
+          <div class="upload-formats">
+            <span class="format-chip">.PNG</span>
+            <span class="format-chip">.JPG</span>
+            <span class="format-chip">.JPEG</span>
+            <span class="format-chip">.WEBP</span>
+          </div>
+
+          <!-- Hidden input -->
+          <input type="file" id="image-input" name="image" accept=".png,.jpg,.jpeg,.webp" required style="display:none;">
+        </div>
+
+        <!-- Preview -->
+        <div class="upload-preview" id="image-preview">
+          <img src="" alt="Preview" id="preview-img">
+          <button type="button" class="preview-remove" title="Remove image">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Caption / Text Input -->
+      <div class="card animate-fade-up delay-200">
+        <div class="card-title">
+          <i data-lucide="message-square" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
+          Caption / Associated Text
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <textarea
+            id="caption" name="caption"
+            class="form-textarea"
+            placeholder="Enter the caption, headline, or text that came with this image. Leave blank if none."
+          ></textarea>
+          <div class="char-counter" id="char-count">0 characters</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <div class="checker-sidebar">
+
+      <!-- Submit -->
+      <div class="submit-section animate-fade-up delay-100">
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn">
+          <i data-lucide="shield"></i>
+          Analyze Content
+        </button>
+        <div class="submit-label">
+          <i data-lucide="lock"></i>
+          Secure analysis · Results in ~5 seconds
+        </div>
+      </div>
+
+      <!-- AI Models -->
+      <div class="model-card animate-fade-up delay-200">
+        <div class="model-card-title">AI Models Active</div>
+        <div class="model-row">
+          <span class="model-name">Image Detection</span>
+          <span class="model-status">● Ready</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name">Text Analysis</span>
+          <span class="model-status">● Ready</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name">Aggregator</span>
+          <span class="model-status">● Ready</span>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-card animate-fade-up delay-300">
+        <div class="tips-title">
+          <i data-lucide="lightbulb"></i>
+          Tips for best results
+        </div>
+        <div class="tip-item">Use high-resolution images when possible</div>
+        <div class="tip-item">Include the original caption/headline for better accuracy</div>
+        <div class="tip-item">Works best with news article images and social media posts</div>
+        <div class="tip-item">Supported formats: PNG, JPG, JPEG, WEBP</div>
+        <div class="tip-item">Maximum file size: 20MB</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</form>
+
+{% endblock %}

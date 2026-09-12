@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+<div class="page-header animate-fade-up">
+  <h1 class="page-title">Settings</h1>
+  <p class="page-subtitle">Configure application preferences and integrations.</p>
+</div>
+
+<div class="grid-2">
+
+  <div class="flex-col gap-6">
+    <!-- Preferences -->
+    <div class="card animate-fade-up delay-100">
+      <div class="card-title">Preferences</div>
+
+      <div class="flex items-center justify-between py-4" style="border-bottom:1px solid var(--border-glass);">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:4px;">Dark Mode</div>
+          <div style="font-size:14px;color:var(--text-muted);">Currently the only supported theme for optimal viewing.</div>
+        </div>
+        <div>
+          <!-- Simulated Switch -->
+          <div style="width:44px;height:24px;border-radius:12px;background:var(--accent-primary);position:relative;cursor:pointer;">
+            <div style="width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:2px;right:2px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between py-4" style="border-bottom:1px solid var(--border-glass);">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:4px;">Email Notifications</div>
+          <div style="font-size:14px;color:var(--text-muted);">Receive alerts for suspicious content detected.</div>
+        </div>
+        <div>
+          <div style="width:44px;height:24px;border-radius:12px;background:var(--bg-glass);border:1px solid var(--border-glass);position:relative;cursor:pointer;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--text-muted);position:absolute;top:1px;left:2px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:4px;">Auto-save History</div>
+          <div style="font-size:14px;color:var(--text-muted);">Automatically save analysis results to your history.</div>
+        </div>
+        <div>
+          <div style="width:44px;height:24px;border-radius:12px;background:var(--accent-primary);position:relative;cursor:pointer;">
+            <div style="width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:2px;right:2px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data & Privacy -->
+    <div class="card animate-fade-up delay-200">
+      <div class="card-title">Data & Privacy</div>
+
+      <p style="color:var(--text-secondary);font-size:14px;line-height:1.6;margin-bottom:16px;">
+        Control how your data is used and stored on TRUTHCHECK servers.
+      </p>
+
+      <button type="button" class="btn btn-outline btn-full mb-3">
+        <i data-lucide="download"></i> Export Data Archive
+      </button>
+
+      <button type="button" class="btn btn-glass btn-full" style="color:var(--danger);border-color:var(--danger-soft);">
+        <i data-lucide="trash-2"></i> Delete Account & Data
+      </button>
+
+    </div>
+  </div>
+
+  <div class="flex-col gap-6">
+    <!-- API Settings -->
+    <div class="card animate-fade-up delay-300">
+      <div class="card-title">API Integration</div>
+
+      <p style="color:var(--text-secondary);font-size:14px;line-height:1.6;margin-bottom:24px;">
+        Use our API to integrate TRUTHCHECK into your own applications, CMS, or social platforms.
+      </p>
+
+      <div class="form-group mb-4">
+        <label class="form-label">API Key</label>
+        <div class="flex gap-2">
+          <input type="text" class="form-input" value="tc_live_8f92j3n8s9d8fn32" readonly style="font-family:monospace;color:var(--accent-secondary);">
+          <button class="btn btn-glass" style="padding:0 var(--space-3);" title="Copy">
+            <i data-lucide="copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mb-4">
+        <button class="btn btn-outline" style="flex:1;">Regenerate Key</button>
+        <button class="btn btn-primary" style="flex:1;"><i data-lucide="book-open"></i> View Docs</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Analysis History{% endblock %}
+{% block breadcrumb %}History{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade-up">
+  <h1 class="page-title">Analysis History</h1>
+  <p class="page-subtitle">View your previous content checks and their authenticity results.</p>
+</div>
+
+<!-- Controls -->
+<div class="history-controls animate-fade-up delay-100">
+  <div class="filter-chips">
+    <div class="filter-chip active">All</div>
+    <div class="filter-chip">
+      <i data-lucide="image" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+      Image
+    </div>
+    <div class="filter-chip">
+      <i data-lucide="file-text" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+      Text
+    </div>
+    <div class="filter-chip">
+      <i data-lucide="video" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+      Video
+    </div>
+    <div class="filter-chip chip-real">Real</div>
+    <div class="filter-chip chip-fake">Fake</div>
+  </div>
+
+  <div class="history-search">
+    <svg class="search-icon" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" placeholder="Search history..." id="table-search">
+  </div>
+</div>
+
+<!-- Table -->
+<div class="history-table-wrapper animate-fade-up delay-200">
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th><div class="th-inner">Type <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
+        <th>Content</th>
+        <th><div class="th-inner">Verdict <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
+        <th><div class="th-inner">Score <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
+        <th><div class="th-inner">Date <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
+        <th style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- Row 1 -->
+      <tr>
+        <td>
+          <span class="badge badge-image"><i data-lucide="image" style="width:10px;height:10px;margin-right:2px;"></i> Image</span>
+        </td>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="history-thumb-placeholder">
+              <i data-lucide="image"></i>
+            </div>
+            <div class="history-text-preview" title="vaccine_news.jpg">vaccine_news.jpg</div>
+          </div>
+        </td>
+        <td><span class="badge badge-real">Real</span></td>
+        <td><strong style="color:var(--success);">94%</strong></td>
+        <td><span class="history-date">Today, 2:45 PM</span></td>
+        <td>
+          <div class="table-actions" style="justify-content: flex-end;">
+            <a href="#" class="table-action-btn" title="View Result">
+              <i data-lucide="eye"></i>
+            </a>
+            <button class="table-action-btn delete" title="Delete">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Row 2 -->
+      <tr>
+        <td>
+          <span class="badge badge-text"><i data-lucide="file-text" style="width:10px;height:10px;margin-right:2px;"></i> Text</span>
+        </td>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="history-text-preview" title="Breaking: Scientists discover cure for cancer...">
+              "Breaking: Scientists discover cure for cancer..."
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-fake">Fake</span></td>
+        <td><strong style="color:var(--danger);">12%</strong></td>
+        <td><span class="history-date">Yesterday, 10:12 AM</span></td>
+        <td>
+          <div class="table-actions" style="justify-content: flex-end;">
+            <a href="#" class="table-action-btn" title="View Result">
+              <i data-lucide="eye"></i>
+            </a>
+            <button class="table-action-btn delete" title="Delete">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Row 3 -->
+      <tr>
+        <td>
+          <span class="badge badge-image"><i data-lucide="image" style="width:10px;height:10px;margin-right:2px;"></i> Image</span>
+        </td>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="history-thumb-placeholder">
+              <i data-lucide="image"></i>
+            </div>
+            <div class="history-text-preview" title="election_photo.jpg">election_photo.jpg</div>
+          </div>
+        </td>
+        <td><span class="badge badge-pending">Uncertain</span></td>
+        <td><strong style="color:var(--warning);">55%</strong></td>
+        <td><span class="history-date">Sep 10, 4:20 PM</span></td>
+        <td>
+          <div class="table-actions" style="justify-content: flex-end;">
+            <a href="#" class="table-action-btn" title="View Result">
+              <i data-lucide="eye"></i>
+            </a>
+            <button class="table-action-btn delete" title="Delete">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Row 4 -->
+      <tr>
+        <td>
+          <span class="badge badge-video"><i data-lucide="video" style="width:10px;height:10px;margin-right:2px;"></i> Video</span>
+        </td>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="history-thumb-placeholder">
+              <i data-lucide="film"></i>
+            </div>
+            <div class="history-text-preview" title="celebrity_deepfake.mp4">celebrity_deepfake.mp4</div>
+          </div>
+        </td>
+        <td><span class="badge badge-fake">Fake</span></td>
+        <td><strong style="color:var(--danger);">8%</strong></td>
+        <td><span class="history-date">Sep 9, 1:15 PM</span></td>
+        <td>
+          <div class="table-actions" style="justify-content: flex-end;">
+            <a href="#" class="table-action-btn" title="View Result">
+              <i data-lucide="eye"></i>
+            </a>
+            <button class="table-action-btn delete" title="Delete">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <div class="pagination-info">Showing 1 to 4 of 24 entries</div>
+    <div class="pagination-buttons">
+      <button class="page-btn" disabled><i data-lucide="chevron-left"></i></button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn"><i data-lucide="chevron-right"></i></button>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Simple filter logic for demo
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>
+{% endblock %}

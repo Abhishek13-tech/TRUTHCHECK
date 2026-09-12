@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome Banner -->
+<div class="dashboard-welcome animate-fade-up">
+  <div class="welcome-content">
+    <p class="welcome-greeting">Good day 👋</p>
+    <h1 class="welcome-name">Welcome back, User</h1>
+    <p class="welcome-subtitle">Here's what's happening with your content analysis today.</p>
+  </div>
+  <div class="welcome-actions">
+    <a href="{{ url_for('image_check') }}" class="btn btn-primary">
+      <i data-lucide="plus"></i>
+      New Check
+    </a>
+    <a href="{{ url_for('history') }}" class="btn btn-glass">
+      <i data-lucide="clock"></i>
+      View History
+    </a>
+  </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+
+  <div class="stat-card purple animate-fade-up delay-100">
+    <div class="stat-icon">
+      <i data-lucide="search"></i>
+    </div>
+    <div class="stat-value" data-count="142" data-suffix="">0</div>
+    <div class="stat-label">Total Checks</div>
+    <div class="stat-trend" style="color: var(--success);">
+      <i data-lucide="trending-up" style="width:12px;height:12px;"></i>
+      +12 this week
+    </div>
+  </div>
+
+  <div class="stat-card green animate-fade-up delay-200">
+    <div class="stat-icon">
+      <i data-lucide="shield-check"></i>
+    </div>
+    <div class="stat-value" data-count="97">0</div>
+    <div class="stat-label">Authentic Content</div>
+    <div class="stat-trend" style="color: var(--success);">
+      <i data-lucide="trending-up" style="width:12px;height:12px;"></i>
+      68% of all checks
+    </div>
+  </div>
+
+  <div class="stat-card red animate-fade-up delay-300">
+    <div class="stat-icon">
+      <i data-lucide="alert-triangle"></i>
+    </div>
+    <div class="stat-value" data-count="34">0</div>
+    <div class="stat-label">Fake / Manipulated</div>
+    <div class="stat-trend" style="color: var(--danger);">
+      <i data-lucide="trending-up" style="width:12px;height:12px;"></i>
+      24% of all checks
+    </div>
+  </div>
+
+  <div class="stat-card cyan animate-fade-up delay-400">
+    <div class="stat-icon">
+      <i data-lucide="target"></i>
+    </div>
+    <div class="stat-value" data-count="96" data-suffix="%">0%</div>
+    <div class="stat-label">AI Accuracy</div>
+    <div class="stat-trend" style="color: var(--accent-secondary);">
+      <i data-lucide="zap" style="width:12px;height:12px;"></i>
+      Model v2.1
+    </div>
+  </div>
+
+</div>
+
+<!-- Dashboard Content Grid -->
+<div class="dashboard-grid">
+
+  <!-- Activity Chart -->
+  <div class="chart-card animate-fade-up delay-200">
+    <div class="chart-header">
+      <span class="chart-title">Analysis Activity</span>
+      <div class="chart-period-tabs">
+        <button class="period-btn active">7D</button>
+        <button class="period-btn">1M</button>
+        <button class="period-btn">3M</button>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="activityChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Donut Chart -->
+  <div class="donut-card animate-fade-up delay-300">
+    <div class="chart-header">
+      <span class="chart-title">Result Distribution</span>
+    </div>
+    <div class="donut-container">
+      <canvas id="donutChart"></canvas>
+    </div>
+    <div class="donut-legend">
+      <div class="legend-item">
+        <div class="legend-label">
+          <div class="legend-dot" style="background: var(--success);"></div>
+          Authentic
+        </div>
+        <div class="legend-val">68%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-label">
+          <div class="legend-dot" style="background: var(--danger);"></div>
+          Fake
+        </div>
+        <div class="legend-val">24%</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-label">
+          <div class="legend-dot" style="background: var(--warning);"></div>
+          Uncertain
+        </div>
+        <div class="legend-val">8%</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Row: Quick Actions + Recent Activity -->
+<div class="dashboard-grid">
+
+  <!-- Quick Actions -->
+  <div class="card animate-fade-up delay-300">
+    <div class="card-title">Quick Analysis</div>
+    <div class="quick-actions">
+      <a href="{{ url_for('image_check') }}" class="quick-action-btn image-check">
+        <div class="quick-action-icon">
+          <i data-lucide="image"></i>
+        </div>
+        <span class="quick-action-label">Check Image</span>
+      </a>
+      <a href="{{ url_for('text_check') }}" class="quick-action-btn text-check">
+        <div class="quick-action-icon">
+          <i data-lucide="file-text"></i>
+        </div>
+        <span class="quick-action-label">Check Text</span>
+      </a>
+      <a href="{{ url_for('video_check') }}" class="quick-action-btn video-check">
+        <div class="quick-action-icon">
+          <i data-lucide="video"></i>
+        </div>
+        <span class="quick-action-label">Check Video</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="card animate-fade-up delay-400">
+    <div class="card-title">Recent Activity</div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="activity-dot real"></div>
+        <div class="activity-info">
+          <div class="activity-title">vaccine_news.jpg — Authentic</div>
+          <div class="activity-time">2 hours ago</div>
+        </div>
+        <span class="badge badge-real">Real</span>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot fake"></div>
+        <div class="activity-info">
+          <div class="activity-title">politician_quote.txt — Fake</div>
+          <div class="activity-time">5 hours ago</div>
+        </div>
+        <span class="badge badge-fake">Fake</span>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot real"></div>
+        <div class="activity-info">
+          <div class="activity-title">flood_image_2024.png — Authentic</div>
+          <div class="activity-time">1 day ago</div>
+        </div>
+        <span class="badge badge-real">Real</span>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot warn"></div>
+        <div class="activity-info">
+          <div class="activity-title">election_photo.jpg — Uncertain</div>
+          <div class="activity-time">2 days ago</div>
+        </div>
+        <span class="badge badge-pending">Uncertain</span>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot fake"></div>
+        <div class="activity-info">
+          <div class="activity-title">celebrity_deepfake.mp4 — Fake</div>
+          <div class="activity-time">3 days ago</div>
+        </div>
+        <span class="badge badge-fake">Fake</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

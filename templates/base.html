@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRUTHCHECK — AI & Content Authenticity Platform. Detect fake images, manipulated text, and misinformation using advanced AI.">
+  <title>{% block title %}TRUTHCHECK{% endblock %} — AI Authenticity Platform</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236c63ff'/><path d='M8 16l6 6L24 10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+  <!-- CSS Design System -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/design-tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+
+  <!-- Page-specific CSS -->
+  {% block extra_css %}{% endblock %}
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body>
+  <!-- Ambient Background Orbs -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <div class="app-shell" id="app-shell">
+
+    <!-- ═══════════════════════════════════════════════════
+         SIDEBAR
+         ═══════════════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="logo-text">TRUTHCHECK</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+
+        <span class="nav-section-label">Main</span>
+
+        <a href="{{ url_for('dashboard') }}" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <span class="nav-section-label">Analysis</span>
+
+        <a href="{{ url_for('image_check') }}" class="nav-item">
+          <i data-lucide="image"></i>
+          <span>Image Check</span>
+        </a>
+
+        <a href="{{ url_for('text_check') }}" class="nav-item">
+          <i data-lucide="file-text"></i>
+          <span>Text Check</span>
+        </a>
+
+        <a href="{{ url_for('video_check') }}" class="nav-item">
+          <i data-lucide="video"></i>
+          <span>Video Check</span>
+        </a>
+
+        <span class="nav-section-label">Records</span>
+
+        <a href="{{ url_for('history') }}" class="nav-item">
+          <i data-lucide="clock"></i>
+          <span>History</span>
+        </a>
+
+        <span class="nav-section-label">Account</span>
+
+        <a href="{{ url_for('profile') }}" class="nav-item">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+
+        <a href="{{ url_for('settings') }}" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+
+        <a href="{{ url_for('about') }}" class="nav-item">
+          <i data-lucide="info"></i>
+          <span>About</span>
+        </a>
+
+      </nav>
+
+      <!-- User Footer -->
+      <div class="sidebar-footer">
+        <a href="{{ url_for('profile') }}" class="sidebar-user" style="text-decoration:none;">
+          <div class="user-avatar">U</div>
+          <div class="user-info">
+            <div class="user-name">User</div>
+            <div class="user-role">Free Plan</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Collapse Toggle -->
+      <button class="sidebar-toggle" id="sidebar-toggle" title="Collapse sidebar">
+        <i data-lucide="chevron-left"></i>
+      </button>
+
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════
+         TOPBAR
+         ═══════════════════════════════════════════════════ -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <!-- Mobile menu -->
+        <button class="icon-btn" id="mobile-menu-btn" style="display:none;">
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div class="breadcrumb">
+          <span>TRUTHCHECK</span>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;stroke:#3d4560;"></i>
+          <span class="current">{% block breadcrumb %}Dashboard{% endblock %}</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Search -->
+        <div class="topbar-search">
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Search history..." id="global-search">
+        </div>
+
+        <!-- Notifications -->
+        <button class="icon-btn" title="Notifications">
+          <i data-lucide="bell"></i>
+          <span class="badge">3</span>
+        </button>
+
+        <!-- Theme (placeholder) -->
+        <button class="icon-btn" title="Toggle theme" id="theme-btn">
+          <i data-lucide="moon"></i>
+        </button>
+
+        <!-- User Avatar -->
+        <a href="{{ url_for('profile') }}" class="user-avatar" style="text-decoration:none; cursor:pointer;">U</a>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════
+         MAIN CONTENT
+         ═══════════════════════════════════════════════════ -->
+    <main class="main-content">
+      <div class="page-wrapper">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+  </div><!-- /.app-shell -->
+
+  <!-- JS -->
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+
+  {% block extra_js %}{% endblock %}
+
+  <script>
+    // Init Lucide icons
+    lucide.createIcons();
+
+    // Mobile menu show on small screens
+    if (window.innerWidth <= 720) {
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      if (mobileBtn) mobileBtn.style.display = 'flex';
+    }
+
+    // Stagger animate page items
+    document.querySelectorAll('.animate-fade-up').forEach((el, i) => {
+      el.style.animationDelay = (i * 80) + 'ms';
+    });
+  </script>
+
+</body>
+</html>

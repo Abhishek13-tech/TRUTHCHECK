@@ -1,0 +1,120 @@
+/* ============================================================
+   TRUTHCHECK — Design Tokens
+   Central source of truth for all design variables
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+
+:root {
+
+  /* ── Background Colors ─────────────────────────────────── */
+  --bg-primary:       #050816;
+  --bg-secondary:     #0a0f1e;
+  --bg-tertiary:      #0d1525;
+  --bg-card:          #0f1829;
+  --bg-glass:         rgba(255, 255, 255, 0.04);
+  --bg-glass-hover:   rgba(255, 255, 255, 0.07);
+  --bg-overlay:       rgba(5, 8, 22, 0.85);
+  --bg-sidebar:       #080d1c;
+
+  /* ── Accent Colors ─────────────────────────────────────── */
+  --accent-primary:       #6c63ff;
+  --accent-primary-glow:  rgba(108, 99, 255, 0.35);
+  --accent-primary-soft:  rgba(108, 99, 255, 0.12);
+  --accent-secondary:     #00d4ff;
+  --accent-secondary-glow:rgba(0, 212, 255, 0.3);
+  --accent-secondary-soft:rgba(0, 212, 255, 0.1);
+
+  /* ── Status Colors ─────────────────────────────────────── */
+  --success:        #00e5a0;
+  --success-glow:   rgba(0, 229, 160, 0.3);
+  --success-soft:   rgba(0, 229, 160, 0.1);
+  --danger:         #ff4d6d;
+  --danger-glow:    rgba(255, 77, 109, 0.3);
+  --danger-soft:    rgba(255, 77, 109, 0.1);
+  --warning:        #ffb547;
+  --warning-glow:   rgba(255, 181, 71, 0.3);
+  --warning-soft:   rgba(255, 181, 71, 0.1);
+  --info:           #00d4ff;
+  --info-soft:      rgba(0, 212, 255, 0.1);
+
+  /* ── Text Colors ───────────────────────────────────────── */
+  --text-primary:   #f0f2f8;
+  --text-secondary: #b8c0d0;
+  --text-muted:     #6b7694;
+  --text-faint:     #3d4560;
+  --text-link:      #6c63ff;
+
+  /* ── Border / Glass ────────────────────────────────────── */
+  --border-glass:       rgba(255, 255, 255, 0.07);
+  --border-glass-hover: rgba(108, 99, 255, 0.4);
+  --border-card:        rgba(255, 255, 255, 0.05);
+  --border-focus:       rgba(108, 99, 255, 0.7);
+
+  /* ── Gradients ─────────────────────────────────────────── */
+  --grad-primary:   linear-gradient(135deg, #6c63ff 0%, #00d4ff 100%);
+  --grad-danger:    linear-gradient(135deg, #ff4d6d 0%, #ff8c00 100%);
+  --grad-success:   linear-gradient(135deg, #00e5a0 0%, #00d4ff 100%);
+  --grad-card:      linear-gradient(135deg, rgba(108,99,255,0.06) 0%, rgba(0,212,255,0.04) 100%);
+  --grad-sidebar:   linear-gradient(180deg, #080d1c 0%, #050816 100%);
+  --grad-hero:      linear-gradient(135deg, #0d0e2e 0%, #050816 50%, #0d1a2e 100%);
+
+  /* ── Typography ────────────────────────────────────────── */
+  --font-body:      'Inter', system-ui, sans-serif;
+  --font-display:   'Space Grotesk', system-ui, sans-serif;
+
+  --text-xs:    0.75rem;    /* 12px */
+  --text-sm:    0.875rem;   /* 14px */
+  --text-base:  1rem;       /* 16px */
+  --text-lg:    1.125rem;   /* 18px */
+  --text-xl:    1.25rem;    /* 20px */
+  --text-2xl:   1.5rem;     /* 24px */
+  --text-3xl:   1.875rem;   /* 30px */
+  --text-4xl:   2.25rem;    /* 36px */
+  --text-5xl:   3rem;       /* 48px */
+
+  /* ── Spacing ───────────────────────────────────────────── */
+  --space-1:    0.25rem;
+  --space-2:    0.5rem;
+  --space-3:    0.75rem;
+  --space-4:    1rem;
+  --space-5:    1.25rem;
+  --space-6:    1.5rem;
+  --space-8:    2rem;
+  --space-10:   2.5rem;
+  --space-12:   3rem;
+  --space-16:   4rem;
+
+  /* ── Border Radius ─────────────────────────────────────── */
+  --radius-sm:    6px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-2xl:   32px;
+  --radius-full:  9999px;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --shadow-sm:        0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:        0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg:        0 16px 40px rgba(0,0,0,0.5);
+  --shadow-glow:      0 0 30px rgba(108,99,255,0.2);
+  --shadow-glow-cyan: 0 0 30px rgba(0,212,255,0.15);
+  --shadow-card:      0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+
+  /* ── Layout ────────────────────────────────────────────── */
+  --sidebar-width:          240px;
+  --sidebar-width-collapsed: 70px;
+  --topbar-height:          64px;
+
+  /* ── Transitions ───────────────────────────────────────── */
+  --transition-fast:    150ms ease;
+  --transition-base:    250ms ease;
+  --transition-slow:    400ms ease;
+  --transition-spring:  350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Z-Index ───────────────────────────────────────────── */
+  --z-sidebar:  100;
+  --z-topbar:   90;
+  --z-modal:    200;
+  --z-toast:    300;
+}
