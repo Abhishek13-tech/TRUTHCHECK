@@ -34,7 +34,6 @@ def detect_ai_text(text):
     }
 
 
-# Test
 if __name__ == "__main__":
     sample_text = """
     Artificial intelligence is transforming the way people work,

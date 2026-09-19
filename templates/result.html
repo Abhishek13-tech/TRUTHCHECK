@@ -1,272 +1,564 @@
-{% extends "base.html" %}
-{% block title %}Analysis Result{% endblock %}
-{% block breadcrumb %}Result{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
-{% endblock %}
+<head>
 
-{% block content %}
+    <meta charset="UTF-8">
 
-<!-- Back Button -->
-<div class="mb-6 animate-fade-up">
-  <a href="{{ url_for('image_check') }}" class="btn btn-glass btn-sm" style="display:inline-flex;">
-    <i data-lucide="arrow-left"></i> Analyze Another File
-  </a>
-</div>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<!-- Define overall state based on final_result from backend -->
-<!-- For now, we simulate logic based on text containing "Fake" or "Real" for styling -->
-{% set is_fake = 'fake' in final_result.lower() or 'manipulate' in final_result.lower() %}
-{% set is_real = 'authentic' in final_result.lower() or 'real' in final_result.lower() %}
-{% set is_pending = not is_fake and not is_real %}
+    <title>TRUTHCHECK Result</title>
 
-{% set banner_class = 'fake' if is_fake else ('real' if is_real else 'pending') %}
-{% set trust_score = 87 if is_fake else (94 if is_real else 55) %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 
-<div class="result-layout">
+</head>
 
-<<<<<<< HEAD
-  <!-- Verdict Hero -->
-  <div class="verdict-hero">
-    <div class="verdict-banner {{ banner_class }}">
-      <div class="verdict-icon">
-        {% if is_fake %}
-          <i data-lucide="alert-triangle" style="width:36px;height:36px;"></i>
-        {% elif is_real %}
-          <i data-lucide="shield-check" style="width:36px;height:36px;"></i>
-        {% else %}
-          <i data-lucide="clock" style="width:36px;height:36px;"></i>
-        {% endif %}
-      </div>
-      <div class="verdict-title">{{ final_result }}</div>
-      <div class="verdict-subtitle">
-        {% if is_fake %}High probability of AI generation or manipulation detected.{% elif is_real %}No significant traces of manipulation detected.{% else %}Analysis incomplete or models are uncertain.{% endif %}
-      </div>
-    </div>
-  </div>
-=======
-        <main class="result-card">
 
-            <div class="image-section">
+<body>
 
-                <h2>Uploaded Image</h2>
 
-                <img
-                    src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
-                    alt="Uploaded Image"
-                    class="uploaded-image"
-                >
+<div class="container">
 
-            </div>
 
-            <div class="caption-section">
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
 
-                <h2>Caption</h2>
+    <header>
 
-                <p class="caption">
-                    {{ caption if caption else "No caption provided." }}
-                </p>
-
-            </div>
-
-            <div class="analysis-grid">
-
-                <div class="analysis-box">
-                    <h3>Image Authenticity</h3>
-                    <p>{{ image_result }}</p>
-                </div>
-
-                <div class="analysis-box">
-    <h3>Text Authenticity</h3>
-
-    {% if text_result %}
-        <p>
-            <strong>Result:</strong>
-            {{ text_result.ai_detection.label }}
-        </p>
+        <h1>
+            TRUTHCHECK
+        </h1>
 
         <p>
-            <strong>Confidence:</strong>
-            {{ text_result.ai_detection.confidence }}%
+            Authenticity Analysis Result
         </p>
 
-        {% if text_result.highest_match %}
-            <p>
-                <strong>Highest Similarity:</strong>
-                {{ text_result.highest_match.similarity }}%
-            </p>
+    </header>
 
-            <p>
-                <strong>Matching Source:</strong>
-                {{ text_result.highest_match.filename }}
-            </p>
 
-            <p>
-                <strong>Status:</strong>
-                {{ text_result.highest_match.status }}
-            </p>
-        {% else %}
-            <p>No reference text found.</p>
+    <!-- ================================================= -->
+    <!-- RESULT CARD -->
+    <!-- ================================================= -->
+
+    <main class="card">
+
+
+        <!-- ================================================= -->
+        <!-- UPLOADED IMAGE -->
+        <!-- ================================================= -->
+
+        {% if image_filename %}
+
+        <h2>
+            Uploaded Image
+        </h2>
+
+
+        <div
+            style="
+                width:100%;
+                display:flex;
+                justify-content:center;
+                margin-bottom:25px;
+            "
+        >
+
+            <img
+                src="{{ url_for('static', filename='uploads/' + image_filename) }}"
+                alt="Uploaded Image"
+                style="
+                    max-width:100%;
+                    max-height:450px;
+                    object-fit:contain;
+                    border-radius:12px;
+                    display:block;
+                "
+            >
+
+        </div>
+
         {% endif %}
 
-    {% else %}
-        <p>No text provided.</p>
-    {% endif %}
-</div>
 
-            </div>
+        <!-- ================================================= -->
+        <!-- CAPTION -->
+        <!-- ================================================= -->
 
-            <div class="final-result">
+        <h2>
+            Caption
+        </h2>
 
-                <h2>Overall Result</h2>
 
-                <p>
-                    {{ final_result }}
-                </p>
+        <p>
 
-            </div>
+            {% if caption %}
 
-            <a href="/" class="back-button">
-                Check Another Content
-            </a>
+                {{ caption }}
 
-        </main>
->>>>>>> origin/sanjeev-text-module
+            {% else %}
 
-  <!-- Trust Score & Explanation -->
-  <div class="trust-section animate-fade-up delay-100">
-    <!-- Ring -->
-    <div class="trust-ring-wrapper" data-score="{{ trust_score }}">
-      <div class="trust-ring">
-        <svg viewBox="0 0 160 160">
-          <circle class="ring-bg" cx="80" cy="80" r="65"></circle>
-          <circle class="ring-fill" cx="80" cy="80" r="65"></circle>
-        </svg>
-        <div class="trust-ring-center">
-          <div class="trust-percent">0%</div>
-          <div class="trust-label">Trust Score</div>
-        </div>
-      </div>
-    </div>
+                No caption provided.
 
-    <!-- Info -->
-    <div class="trust-info">
-      <div class="trust-info-title">Why this score?</div>
-      <div class="trust-info-desc">
-        The Trust Score is an aggregated confidence metric combining visual analysis, metadata checks, and natural language processing on the provided caption.
-      </div>
-      <div class="trust-factors">
-        <div class="trust-factor">
-          {% if 'fake' in image_result.lower() or 'manipulate' in image_result.lower() %}
-            <i data-lucide="x" style="stroke:var(--danger);"></i> Visual artifacts detected in the image structure.
-          {% else %}
-            <i data-lucide="check" style="stroke:var(--success);"></i> No visual manipulation detected.
-          {% endif %}
-        </div>
-        <div class="trust-factor">
-          {% if 'fake' in text_result.lower() or 'manipulate' in text_result.lower() %}
-            <i data-lucide="x" style="stroke:var(--danger);"></i> Text analysis flagged misleading language.
-          {% else %}
-            <i data-lucide="check" style="stroke:var(--success);"></i> Caption language appears consistent.
-          {% endif %}
-        </div>
-        <div class="trust-factor">
-          <i data-lucide="check" style="stroke:var(--success);"></i> File format ({{ image_path.split('.')[-1] | upper }}) is standard.
-        </div>
-      </div>
-    </div>
-  </div>
+            {% endif %}
 
-  <!-- Media Display -->
-  <div class="media-section animate-fade-up delay-200">
-    <div class="card uploaded-image-card">
-      <div class="card-title text-sm flex items-center gap-2 mb-3">
-        <i data-lucide="image" style="width:16px;height:16px;"></i> Analyzed Image
-      </div>
-      <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) if image_path else '' }}" alt="Uploaded Image">
-    </div>
+        </p>
 
-    <div class="card">
-      <div class="card-title text-sm flex items-center gap-2 mb-3">
-        <i data-lucide="message-square" style="width:16px;height:16px;"></i> Associated Caption
-      </div>
-      <div class="caption-text">
-        {% if caption %}
-          "{{ caption }}"
+
+        <!-- ================================================= -->
+        <!-- IMAGE AUTHENTICITY -->
+        <!-- ================================================= -->
+
+        {% if image_result %}
+
+        <h2>
+            Image Authenticity
+        </h2>
+
+
+        {% if image_result.get("status") == "success" %}
+
+
+            <h3>
+                {{ image_result.get(
+                    "label",
+                    "Analysis Completed"
+                ) }}
+            </h3>
+
+
+            <p>
+
+                AI-Generated Probability:
+
+                <strong>
+
+                    {{ image_result.get(
+                        "ai_probability",
+                        0
+                    ) }}%
+
+                </strong>
+
+            </p>
+
+
+            <p>
+
+                Real Probability:
+
+                <strong>
+
+                    {{ image_result.get(
+                        "real_probability",
+                        0
+                    ) }}%
+
+                </strong>
+
+            </p>
+
+
         {% else %}
-          <span style="color:var(--text-faint);font-style:normal;">No caption provided for analysis.</span>
+
+
+            <p>
+
+                Image analysis could not be completed.
+
+            </p>
+
+
+            {% if image_result.get("message") %}
+
+            <p>
+
+                {{ image_result.get("message") }}
+
+            </p>
+
+            {% endif %}
+
+
         {% endif %}
-      </div>
-    </div>
-  </div>
 
-  <!-- Module Breakdown -->
-  <div class="analysis-grid animate-fade-up delay-300">
+        {% endif %}
 
-    {% set img_fake = 'fake' in image_result.lower() or 'manipulate' in image_result.lower() %}
-    {% set img_real = 'authentic' in image_result.lower() or 'real' in image_result.lower() %}
-    {% set img_class = 'fake-card' if img_fake else ('real-card' if img_real else 'pending-card') %}
 
-    <div class="module-card {{ img_class }}">
-      <div class="module-header">
-        <div class="module-icon" style="background:var(--bg-glass);">
-          <i data-lucide="image"></i>
+        <!-- ================================================= -->
+        <!-- TEXT AUTHENTICITY -->
+        <!-- ================================================= -->
+
+        {% if text_result %}
+
+        <h2>
+            Text Authenticity
+        </h2>
+
+
+        {% if text_result.get("ai_detection") %}
+
+
+            <h3>
+
+                {{ text_result.get(
+                    "ai_detection"
+                ).get(
+                    "label",
+                    "Unknown"
+                ) }}
+
+            </h3>
+
+
+            <p>
+
+                AI Detection Confidence:
+
+                <strong>
+
+                    {{ text_result.get(
+                        "ai_detection"
+                    ).get(
+                        "confidence",
+                        0
+                    ) }}%
+
+                </strong>
+
+            </p>
+
+
+        {% else %}
+
+
+            <p>
+                Text analysis could not be completed.
+            </p>
+
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- HIGHEST SIMILARITY -->
+        <!-- ================================================= -->
+
+        {% if text_result.get("highest_match") %}
+
+
+        <h3>
+            Highest Similarity Match
+        </h3>
+
+
+        <p>
+
+            Reference File:
+
+            <strong>
+
+                {{ text_result.get(
+                    "highest_match"
+                ).get(
+                    "filename",
+                    "Unknown"
+                ) }}
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Similarity:
+
+            <strong>
+
+                {{ text_result.get(
+                    "highest_match"
+                ).get(
+                    "similarity",
+                    0
+                ) }}%
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Status:
+
+            <strong>
+
+                {{ text_result.get(
+                    "highest_match"
+                ).get(
+                    "status",
+                    "Unknown"
+                ) }}
+
+            </strong>
+
+        </p>
+
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- ALL SIMILARITY RESULTS -->
+        <!-- ================================================= -->
+
+        {% if text_result.get("similarity_results") %}
+
+
+        <h3>
+            Similarity Results
+        </h3>
+
+
+        <div
+            style="
+                overflow-x:auto;
+                width:100%;
+            "
+        >
+
+            <table
+                style="
+                    width:100%;
+                    border-collapse:collapse;
+                "
+            >
+
+
+                <thead>
+
+                    <tr>
+
+                        <th
+                            style="
+                                text-align:left;
+                                padding:10px;
+                            "
+                        >
+                            Reference
+                        </th>
+
+
+                        <th
+                            style="
+                                text-align:left;
+                                padding:10px;
+                            "
+                        >
+                            Similarity
+                        </th>
+
+
+                        <th
+                            style="
+                                text-align:left;
+                                padding:10px;
+                            "
+                        >
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for item in
+                        text_result.get(
+                            "similarity_results"
+                        )
+                    %}
+
+
+                    <tr>
+
+
+                        <td
+                            style="
+                                padding:10px;
+                            "
+                        >
+
+                            {{ item.get(
+                                "filename",
+                                "Unknown"
+                            ) }}
+
+                        </td>
+
+
+                        <td
+                            style="
+                                padding:10px;
+                            "
+                        >
+
+                            {{ item.get(
+                                "similarity",
+                                0
+                            ) }}%
+
+                        </td>
+
+
+                        <td
+                            style="
+                                padding:10px;
+                            "
+                        >
+
+                            {{ item.get(
+                                "status",
+                                "Unknown"
+                            ) }}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
         </div>
-        <div class="module-name">Image AI Model</div>
-      </div>
-      <div class="module-result">{{ image_result }}</div>
-      <div class="module-confidence">
-        <div class="confidence-label">
-          <span>Confidence</span>
-          <span>{% if img_fake %}91%{% elif img_real %}98%{% else %}--{% endif %}</span>
-        </div>
-        <div class="confidence-bar-wrapper">
-          <div class="confidence-bar" style="width: {% if img_fake %}91%{% elif img_real %}98%{% else %}0%{% endif %}"></div>
-        </div>
-      </div>
-    </div>
 
-    {% set txt_fake = 'fake' in text_result.lower() or 'manipulate' in text_result.lower() %}
-    {% set txt_real = 'authentic' in text_result.lower() or 'real' in text_result.lower() %}
-    {% set txt_class = 'fake-card' if txt_fake else ('real-card' if txt_real else 'pending-card') %}
 
-    <div class="module-card {{ txt_class }}">
-      <div class="module-header">
-        <div class="module-icon" style="background:var(--bg-glass);">
-          <i data-lucide="file-text"></i>
-        </div>
-        <div class="module-name">Text AI Model</div>
-      </div>
-      <div class="module-result">{{ text_result }}</div>
-      <div class="module-confidence">
-        <div class="confidence-label">
-          <span>Confidence</span>
-          <span>{% if txt_fake %}84%{% elif txt_real %}92%{% else %}--{% endif %}</span>
-        </div>
-        <div class="confidence-bar-wrapper">
-          <div class="confidence-bar" style="width: {% if txt_fake %}84%{% elif txt_real %}92%{% else %}0%{% endif %}"></div>
-        </div>
-      </div>
-    </div>
+        {% endif %}
 
-  </div>
 
-  <!-- Actions -->
-  <div class="result-actions animate-fade-up delay-400 mt-4">
-    <button class="btn btn-outline">
-      <i data-lucide="download"></i> Download Report PDF
-    </button>
-    <button class="btn btn-glass">
-      <i data-lucide="share-2"></i> Share Result
-    </button>
-  </div>
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- OVERALL RESULT -->
+        <!-- ================================================= -->
+
+        {% if overall_result %}
+
+
+        <h2>
+            Overall Result
+        </h2>
+
+
+        <h3>
+
+            {{ overall_result.get(
+                "label",
+                "Analysis Completed"
+            ) }}
+
+        </h3>
+
+
+        {% if overall_result.get("score") is not none %}
+
+
+        <p>
+
+            Authenticity Score:
+
+            <strong>
+
+                {{ overall_result.get(
+                    "score"
+                ) }}%
+
+            </strong>
+
+        </p>
+
+
+        {% endif %}
+
+
+        {% if overall_result.get("message") %}
+
+
+        <p>
+
+            {{ overall_result.get(
+                "message"
+            ) }}
+
+        </p>
+
+
+        {% endif %}
+
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- TEXT ONLY RESULT -->
+        <!-- ================================================= -->
+
+        {% if final_result and not overall_result %}
+
+
+        <h2>
+            Result
+        </h2>
+
+
+        <h3>
+
+            {{ final_result }}
+
+        </h3>
+
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- BUTTON -->
+        <!-- ================================================= -->
+
+        <br>
+
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="button"
+        >
+            Check Another Content
+        </a>
+
+
+    </main>
+
 
 </div>
 
-{% endblock %}
 
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-{% endblock %}
+</body>
+
+</html>
