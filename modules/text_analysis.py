@@ -1,72 +1,30 @@
 from .text_detector import detect_ai_text
-from .similarity_checker import calculate_similarity
-from .reference_loader import load_reference_texts
+from .web_source_finder import find_best_web_source
 
 
 def analyze_text(user_text):
     """
-    Analyze text for AI detection and similarity
-    against all stored reference texts.
+    Complete text analysis:
+    1. AI/Human detection
+    2. Web source detection
     """
+
+    if not user_text or not user_text.strip():
+        return {
+            "ai_detection": {
+                "ai_percentage": 0.0,
+                "human_percentage": 0.0
+            },
+            "web_source": None
+        }
 
     # AI detection
     ai_result = detect_ai_text(user_text)
 
-    # Load reference texts automatically
-    references = load_reference_texts()
-
-    similarity_results = []
-
-    # Compare user text with every reference
-    for reference in references:
-
-        result = calculate_similarity(
-            user_text,
-            reference["text"]
-        )
-
-        similarity_results.append({
-            "filename": reference["filename"],
-            "similarity": result["similarity"],
-            "status": result["status"]
-        })
-
-    # Find highest similarity
-    highest_match = None
-
-    if similarity_results:
-        highest_match = max(
-            similarity_results,
-            key=lambda x: x["similarity"]
-        )
+    # Web source detection
+    web_source = find_best_web_source(user_text)
 
     return {
         "ai_detection": ai_result,
-        "similarity_results": similarity_results,
-        "highest_match": highest_match
+        "web_source": web_source
     }
-
-
-# Test
-if __name__ == "__main__":
-
-    user_text = """
-    Artificial intelligence is changing the way people learn and work.
-    """
-
-    result = analyze_text(user_text)
-
-    print("AI Detection:")
-    print(result["ai_detection"])
-
-    print("\nSimilarity Results:")
-
-    for item in result["similarity_results"]:
-        print(
-            f"{item['filename']} -> "
-            f"{item['similarity']}% -> "
-            f"{item['status']}"
-        )
-
-    print("\nHighest Match:")
-    print(result["highest_match"])

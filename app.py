@@ -1,22 +1,27 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
+
 from modules.text_analysis import analyze_text
 
+
 app = Flask(__name__)
+
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+# Create upload folder if it does not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def allowed_file(filename):
     return (
         "." in filename
-        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+        and filename.rsplit(".", 1)[1].lower()
+        in ALLOWED_EXTENSIONS
     )
 
 
@@ -28,46 +33,87 @@ def home():
 @app.route("/check", methods=["POST"])
 def check_content():
 
+    # Get uploaded image and text
     image = request.files.get("image")
     caption = request.form.get("caption", "").strip()
-    text_result = analyze_text(caption) if caption else None
 
-    if not image or image.filename == "":
-        return render_template(
-            "index.html",
-            error="Please upload an image."
+    # Analyze text if provided
+    text_result = (
+        analyze_text(caption)
+        if caption
+        else None
+    )
+
+    # Image is optional
+    image_path = None
+
+    if image and image.filename != "":
+
+        # Validate image
+        if not allowed_file(image.filename):
+            return render_template(
+                "index.html",
+                error="Only PNG, JPG, JPEG and WEBP images are allowed."
+            )
+
+        # Secure filename
+        filename = secure_filename(image.filename)
+
+        # Create image path
+        image_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
         )
 
-    if not allowed_file(image.filename):
-        return render_template(
-            "index.html",
-            error="Only PNG, JPG, JPEG and WEBP images are allowed."
-        )
+        # Save image
+        image.save(image_path)
 
-    filename = secure_filename(image.filename)
-    image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-
-    image.save(image_path)
-
-        # AI modules will be connected here
+    # Image analysis will be connected later
     image_result = "Analysis Pending"
 
+    # Create final text result
     if text_result:
-        if text_result["highest_match"]:
-            final_result = (
-                f"Text analysis complete. "
-                f"AI result: {text_result['ai_detection']['label']}. "
-                f"Highest similarity: "
-                f"{text_result['highest_match']['similarity']}%."
+
+        ai_percentage = (
+            text_result["ai_detection"]["ai_percentage"]
+        )
+
+        human_percentage = (
+            text_result["ai_detection"]["human_percentage"]
+        )
+
+        # Web source found
+        if text_result["web_source"]:
+
+            similarity = (
+                text_result["web_source"]["similarity"]
             )
+
+            source_status = (
+                text_result["web_source"]["status"]
+            )
+
+            final_result = (
+                f"AI Generated: {ai_percentage}%. "
+                f"Human Written: {human_percentage}%. "
+                f"Web Similarity: {similarity}%. "
+                f"Status: {source_status}."
+            )
+
+        # No web source found
         else:
+
             final_result = (
-                f"Text analysis complete. "
-                f"AI result: {text_result['ai_detection']['label']}."
+                f"AI Generated: {ai_percentage}%. "
+                f"Human Written: {human_percentage}%. "
+                f"No matching web source found."
             )
+
     else:
+
         final_result = "No text provided."
 
+    # Send result to result page
     return render_template(
         "result.html",
         image_path=image_path,

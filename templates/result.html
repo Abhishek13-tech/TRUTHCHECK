@@ -22,18 +22,19 @@
 
         <main class="result-card">
 
-            <div class="image-section">
+           <div class="image-section">
 
-                <h2>Uploaded Image</h2>
+    {% if image_path %}
+        <h2>Uploaded Image</h2>
 
-                <img
-                    src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
-                    alt="Uploaded Image"
-                    class="uploaded-image"
-                >
+        <img
+            src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
+            alt="Uploaded Image"
+            class="uploaded-image"
+        >
+    {% endif %}
 
-            </div>
-
+</div>
             <div class="caption-section">
 
                 <h2>Caption</h2>
@@ -50,42 +51,46 @@
                     <h3>Image Authenticity</h3>
                     <p>{{ image_result }}</p>
                 </div>
-
-                <div class="analysis-box">
+<div class="analysis-box">
     <h3>Text Authenticity</h3>
 
     {% if text_result %}
+
         <p>
-            <strong>Result:</strong>
-            {{ text_result.ai_detection.label }}
+            <strong>AI Generated:</strong>
+            {{ text_result.ai_detection.ai_percentage }}%
         </p>
 
         <p>
-            <strong>Confidence:</strong>
-            {{ text_result.ai_detection.confidence }}%
+            <strong>Human Written:</strong>
+            {{ text_result.ai_detection.human_percentage }}%
         </p>
 
-        {% if text_result.highest_match %}
-            <p>
-                <strong>Highest Similarity:</strong>
-                {{ text_result.highest_match.similarity }}%
-            </p>
+        {% if text_result.web_source %}
 
             <p>
-                <strong>Matching Source:</strong>
-                {{ text_result.highest_match.filename }}
+                <strong>Web Similarity:</strong>
+                {{ text_result.web_source.similarity }}%
             </p>
 
             <p>
                 <strong>Status:</strong>
-                {{ text_result.highest_match.status }}
+                {{ text_result.web_source.status }}
             </p>
+
         {% else %}
-            <p>No reference text found.</p>
+
+            <p>
+                <strong>Web Similarity:</strong>
+                No matching source found
+            </p>
+
         {% endif %}
 
     {% else %}
+
         <p>No text provided.</p>
+
     {% endif %}
 </div>
 
