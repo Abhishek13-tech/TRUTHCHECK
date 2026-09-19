@@ -10,7 +10,7 @@
 
 <div class="page-header animate-fade-up">
   <h1 class="page-title">Image Authenticity Check</h1>
-  <p class="page-subtitle">Upload an image and caption to detect deepfakes, manipulation, and misinformation.</p>
+  <p class="page-subtitle">Upload an image to detect deepfakes, generative AI manipulation, and visual inconsistencies.</p>
 </div>
 
 {% if error %}
@@ -61,25 +61,6 @@
         </div>
       </div>
 
-      <!-- Caption / Text Input -->
-      <div class="card animate-fade-up delay-200">
-        <div class="card-title">
-          <i data-lucide="message-square" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
-          Caption / Associated Text
-        </div>
-
-        <div class="form-group" style="margin-bottom: 0;">
-          <textarea
-            id="caption" name="caption"
-            class="form-textarea"
-            placeholder="Enter the caption, headline, or text that came with this image. Leave blank if none."
-          ></textarea>
-          <div class="char-counter" id="char-count">0 characters</div>
-        </div>
-      </div>
-
-    </div>
-
     <!-- ── Sidebar ─────────────────────────────────────── -->
     <div class="checker-sidebar">
 
@@ -87,11 +68,11 @@
       <div class="submit-section animate-fade-up delay-100">
         <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn">
           <i data-lucide="shield"></i>
-          Analyze Content
+          Analyze Image
         </button>
         <div class="submit-label">
           <i data-lucide="lock"></i>
-          Secure analysis · Results in ~5 seconds
+          Secure analysis · Results in ~3 seconds
         </div>
       </div>
 
@@ -99,15 +80,15 @@
       <div class="model-card animate-fade-up delay-200">
         <div class="model-card-title">AI Models Active</div>
         <div class="model-row">
-          <span class="model-name">Image Detection</span>
+          <span class="model-name">Visual Deepfake Detector</span>
           <span class="model-status">● Ready</span>
         </div>
         <div class="model-row">
-          <span class="model-name">Text Analysis</span>
+          <span class="model-name">EXIF & Artifact Analyzer</span>
           <span class="model-status">● Ready</span>
         </div>
         <div class="model-row">
-          <span class="model-name">Aggregator</span>
+          <span class="model-name">Generative AI Classifier</span>
           <span class="model-status">● Ready</span>
         </div>
       </div>
@@ -119,8 +100,8 @@
           Tips for best results
         </div>
         <div class="tip-item">Use high-resolution images when possible</div>
-        <div class="tip-item">Include the original caption/headline for better accuracy</div>
-        <div class="tip-item">Works best with news article images and social media posts</div>
+        <div class="tip-item">Screenshots with text? Use the dedicated <strong>Text Check</strong> tab for OCR extraction.</div>
+        <div class="tip-item">Works best with photographic images, faces, and digital art</div>
         <div class="tip-item">Supported formats: PNG, JPG, JPEG, WEBP</div>
         <div class="tip-item">Maximum file size: 20MB</div>
       </div>

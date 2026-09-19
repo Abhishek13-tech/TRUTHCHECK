@@ -201,19 +201,10 @@
   document.addEventListener('DOMContentLoaded', () => {
     // Image check page
     initUploadBox('#image-upload-box', '#image-input', '#image-preview');
-    initCharCounter('#caption', '#char-count', 1000);
-
-    // Text check page
-    initCharCounter('#text-input', '#char-count', 5000);
-    initWordCounter('#text-input', '#word-count');
-
-    // Video check page
-    initUploadBox('#video-upload-box', '#video-input', '#video-preview');
 
     // Form submissions
     initSubmitLoading('#check-form', '#submit-btn');
     initSubmitLoading('#text-check-form', '#submit-btn');
-    initSubmitLoading('#video-check-form', '#submit-btn');
   });
 
 })();
