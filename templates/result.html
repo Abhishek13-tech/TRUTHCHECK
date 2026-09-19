@@ -187,6 +187,7 @@
 
 
         {% endif %}
+<<<<<<< ours
 
         {% endif %}
 
@@ -252,6 +253,153 @@
 
         {% if text_result.get("highest_match") %}
 
+=======
+      </div>
+      <div class="verdict-title">{{ final_result }}</div>
+      <div class="verdict-subtitle">
+        {% if is_fake %}High probability of AI generation or manipulation detected.{% elif is_real %}Content verified as authentic / human-written.{% else %}Analysis incomplete or models are uncertain.{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust Score & Explanation -->
+  <div class="trust-section animate-fade-up delay-100">
+    <!-- Ring -->
+    <div class="trust-ring-wrapper" data-score="{{ trust_score }}">
+      <div class="trust-ring">
+        <svg viewBox="0 0 160 160">
+          <circle class="ring-bg" cx="80" cy="80" r="65"></circle>
+          <circle class="ring-fill" cx="80" cy="80" r="65"></circle>
+        </svg>
+        <div class="trust-ring-center">
+          <div class="trust-percent">0%</div>
+          <div class="trust-label">Trust Score</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="trust-info">
+      <div class="trust-info-title">Why this score?</div>
+      <div class="trust-info-desc">
+        {% if source_type == 'image_ocr' %}
+        Aggregated confidence combining OCR text recognition, perplexity analysis, sentence burstiness, and semantic structure.
+        {% elif source_type == 'image_check' %}
+        Visual deepfake analysis, EXIF consistency checks, and generative artifact evaluation on the uploaded image.
+        {% else %}
+        Natural language processing, perplexity scoring, and statistical token analysis on the provided text.
+        {% endif %}
+      </div>
+      <div class="trust-factors">
+        {% if image_filename %}
+        <div class="trust-factor">
+          {% if 'fake' in image_result.lower() or 'manipulate' in image_result.lower() %}
+            <i data-lucide="x" style="stroke:var(--danger);"></i> Visual artifacts or manipulation detected.
+          {% else %}
+            <i data-lucide="check" style="stroke:var(--success);"></i> 
+            {% if source_type == 'image_ocr' %}Source image loaded & OCR extracted successfully.{% else %}No visual manipulation detected.{% endif %}
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if 'N/A' not in text_result %}
+        <div class="trust-factor">
+          {% if 'fake' in text_result.lower() or 'ai-generated' in text_result.lower() %}
+            <i data-lucide="x" style="stroke:var(--danger);"></i> AI generation patterns detected in text.
+          {% else %}
+            <i data-lucide="check" style="stroke:var(--success);"></i> Text language appears authentic and human-written.
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="trust-factor">
+          <i data-lucide="check" style="stroke:var(--success);"></i> 
+          {% if image_filename %}
+          File ({{ image_filename.split('.')[-1] | upper }}) processed successfully.
+          {% else %}
+          Direct text payload analyzed successfully.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media & Content Verification Section -->
+  <div class="media-section animate-fade-up delay-200" style="grid-template-columns: {% if image_filename and caption %}1fr 1fr{% else %}1fr{% endif %};">
+    
+    {% if image_filename %}
+    <div class="card uploaded-image-card">
+      <div class="card-title text-sm flex items-center justify-between mb-3">
+        <span class="flex items-center gap-2">
+          <i data-lucide="image" style="width:16px;height:16px;stroke:var(--accent-primary);"></i>
+          {% if source_type == 'image_ocr' %}Source Image (OCR Input){% else %}Analyzed Image{% endif %}
+        </span>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">{{ image_filename }}</span>
+      </div>
+      <div style="text-align: center; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); padding: 8px;">
+        <img src="{{ url_for('static', filename='uploads/' + image_filename) }}" alt="Uploaded Image" style="max-height: 280px; width: auto; max-width: 100%; border-radius: var(--radius-sm); object-fit: contain;">
+      </div>
+    </div>
+    {% endif %}
+
+    {% if caption %}
+    <div class="card" style="display: flex; flex-direction: column;">
+      <div class="card-title text-sm flex items-center justify-between mb-3">
+        <span class="flex items-center gap-2">
+          <i data-lucide="file-text" style="width:16px;height:16px;stroke:var(--accent-secondary);"></i>
+          {% if source_type == 'image_ocr' %}Extracted Text from Image{% else %}Analyzed Text{% endif %}
+        </span>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-glass btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('editable-caption').value); if(window.showToast) showToast('Text copied to clipboard!', 'success');" style="padding: 2px 8px; font-size: 11px;">
+            <i data-lucide="copy" style="width:12px;height:12px;"></i> Copy Text
+          </button>
+          <button type="submit" form="recheck-form" class="btn btn-primary btn-sm" style="padding: 2px 8px; font-size: 11px;">
+            <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Re-check Text
+          </button>
+        </div>
+      </div>
+      <form id="recheck-form" action="{{ url_for('text_check_submit') }}" method="POST" style="display: flex; flex-direction: column; flex: 1; margin: 0;">
+        <input type="hidden" name="source_type" value="direct_text">
+        <textarea id="editable-caption" name="text" class="caption-text" style="flex: 1; min-height: 200px; max-height: 280px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); font-style: normal; font-family: inherit; font-size: var(--text-sm); line-height: 1.6; color: var(--text-main); width: 100%; resize: vertical;" required>{{ caption }}</textarea>
+      </form>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Module Breakdown -->
+  <div class="analysis-grid animate-fade-up delay-300" style="grid-template-columns: {% if image_path and 'N/A' in text_result %}1fr{% elif not image_path %}1fr{% else %}repeat(auto-fit, minmax(280px, 1fr)){% endif %};">
+
+    {% if image_path %}
+    {% set img_fake = 'fake' in image_result.lower() or 'manipulate' in image_result.lower() %}
+    {% set img_real = 'authentic' in image_result.lower() or 'real' in image_result.lower() %}
+    {% set img_class = 'fake-card' if img_fake else ('real-card' if img_real else 'pending-card') %}
+
+    <div class="module-card {{ img_class }}">
+      <div class="module-header">
+        <div class="module-icon" style="background:var(--bg-glass);">
+          <i data-lucide="image"></i>
+        </div>
+        <div class="module-name">Image AI Model</div>
+      </div>
+      <div class="module-result">{{ image_result }}</div>
+      <div class="module-confidence">
+        <div class="confidence-label">
+          <span>Confidence</span>
+          <span>{% if img_fake %}91%{% elif img_real %}98%{% else %}--{% endif %}</span>
+        </div>
+        <div class="confidence-bar-wrapper">
+          <div class="confidence-bar" style="width: {% if img_fake %}91%{% elif img_real %}98%{% else %}0%{% endif %}"></div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if 'N/A' not in text_result %}
+    {% set txt_fake = 'fake' in text_result.lower() or 'manipulate' in text_result.lower() or 'ai-generated' in text_result.lower() %}
+    {% set txt_real = 'authentic' in text_result.lower() or 'real' in text_result.lower() or 'human' in text_result.lower() %}
+    {% set txt_class = 'fake-card' if txt_fake else ('real-card' if txt_real else 'pending-card') %}
+>>>>>>> theirs
 
         <h3>
             Highest Similarity Match
@@ -447,6 +595,12 @@
             </table>
 
         </div>
+<<<<<<< ours
+=======
+      </div>
+    </div>
+    {% endif %}
+>>>>>>> theirs
 
 
         {% endif %}

@@ -1,42 +1,108 @@
 {% extends "base.html" %}
-{% block title %}Text Check{% endblock %}
+{% block title %}Text Authenticity & AI Detection{% endblock %}
 {% block breadcrumb %}Text Check{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checker.css') }}">
+<!-- Tesseract.js for instant client-side OCR image text extraction -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="page-header animate-fade-up">
-  <h1 class="page-title">Text Authenticity Check</h1>
-  <p class="page-subtitle">Analyze headlines, articles, social media posts, and captions for misinformation.</p>
+  <h1 class="page-title">Text Authenticity & AI Detection</h1>
+  <p class="page-subtitle">Analyze text directly or extract text from screenshots & images to detect AI-generated vs human-written content.</p>
 </div>
 
-<form action="{{ url_for('text_check_submit') }}" method="POST" id="text-check-form">
+{% if error %}
+<div class="alert alert-danger mb-4 animate-fade-up">
+  <i data-lucide="alert-circle"></i>
+  <span>{{ error }}</span>
+</div>
+{% endif %}
+
+<form action="{{ url_for('text_check_submit') }}" method="POST" enctype="multipart/form-data" id="text-check-form">
+  <input type="hidden" name="source_type" id="source-type" value="direct_text">
+
   <div class="checker-layout">
 
     <!-- Main Panel -->
     <div class="checker-main">
 
-      <!-- Text Input -->
-      <div class="card animate-fade-up delay-100">
+      <!-- Mode Switcher Tabs -->
+      <div class="mode-tabs animate-fade-up">
+        <button type="button" class="mode-tab-btn active" id="tab-direct" onclick="switchMode('direct')">
+          <i data-lucide="clipboard-pen-line"></i>
+          <span>Direct Text (Paste / Type)</span>
+        </button>
+        <button type="button" class="mode-tab-btn" id="tab-ocr" onclick="switchMode('ocr')">
+          <i data-lucide="scan"></i>
+          <span>Extract Text from Image (OCR)</span>
+        </button>
+      </div>
+
+      <!-- Mode 2: OCR Image Upload Section (Hidden by default, shown when OCR tab is active) -->
+      <div class="card animate-fade-up" id="ocr-upload-card" style="display: none;">
         <div class="card-title">
-          <i data-lucide="file-text" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
-          Enter Text to Analyze
+          <i data-lucide="image" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
+          Upload Image with Text
+        </div>
+
+        <div class="ocr-dropzone" id="ocr-dropzone">
+          <input type="file" id="ocr-image-input" name="ocr_image" accept="image/png, image/jpeg, image/webp" style="display: none;">
+          <div class="ocr-icon-circle">
+            <i data-lucide="upload-cloud" style="width:28px;height:28px;"></i>
+          </div>
+          <h4 style="font-size: var(--text-md); font-weight: 600; margin-bottom: 4px;">Click or Drag & Drop image here</h4>
+          <p style="font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 0;">Supports PNG, JPG, JPEG, WEBP screenshots, documents, and memes</p>
+        </div>
+
+        <!-- Preview and OCR Progress -->
+        <div class="ocr-preview-container" id="ocr-preview-box">
+          <div class="flex items-center justify-between mb-2">
+            <span style="font-size: var(--text-xs); font-weight: 600; color: var(--text-muted);">Uploaded Image Preview</span>
+            <button type="button" class="btn btn-glass btn-sm" onclick="resetOCR()" style="padding: 2px 8px; font-size: 11px;">
+              <i data-lucide="x"></i> Change Image
+            </button>
+          </div>
+          <div style="text-align: center;">
+            <img id="ocr-preview-img" class="ocr-img-thumb" src="" alt="OCR Preview">
+          </div>
+          
+          <div id="ocr-status-box" style="margin-top: 10px; text-align: center;">
+            <div id="ocr-progress-spinner" class="flex items-center justify-center gap-2" style="display: none;">
+              <i data-lucide="loader-2" class="spin" style="stroke: var(--accent-primary);"></i>
+              <span id="ocr-status-text" style="font-size: var(--text-sm); font-weight: 500;">Extracting text with OCR...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text Input Area (Shared by both modes: direct paste or editable extracted text) -->
+      <div class="card animate-fade-up delay-100">
+        <div class="card-title flex items-center justify-between">
+          <div>
+            <i data-lucide="file-text" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
+            <span id="text-section-title">Enter Text to Analyze</span>
+          </div>
+          <span id="ocr-badge-indicator" class="ocr-status-badge" style="display: none;">
+            <i data-lucide="check-circle" style="width:12px;height:12px;"></i> Text Extracted via OCR
+          </span>
         </div>
 
         <div class="text-check-area">
           <textarea
             id="text-input" name="text"
             class="form-textarea"
-            placeholder="Paste a news headline, article excerpt, social media caption, or any text you want to check for authenticity..."
+            placeholder="Paste a news headline, article excerpt, social media caption, essay, or extracted text here..."
             style="border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none;"
+            required
           ></textarea>
           <div class="text-check-toolbar">
             <div class="text-stats">
-              <span class="text-stat"><span id="char-count">0</span> chars</span>
-              <span class="text-stat"><span id="word-count">0</span> words</span>
+              <span class="text-stat" id="char-count">0 / 5000 chars</span>
+              <span class="text-stat" id="word-count">0 words</span>
             </div>
             <div class="flex gap-2">
               <button type="button" class="btn btn-glass btn-sm" id="paste-btn">
@@ -50,9 +116,9 @@
         </div>
       </div>
 
-      <!-- Language & Options Row -->
+      <!-- Analysis Options Row -->
       <div class="card animate-fade-up delay-200">
-        <div class="card-title" style="margin-bottom: var(--space-4);">Analysis Options</div>
+        <div class="card-title" style="margin-bottom: var(--space-4);">Detection Configuration</div>
         <div class="grid-2">
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label">Language</label>
@@ -66,13 +132,11 @@
             </select>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Content Type</label>
-            <select class="form-select" name="content_type">
-              <option value="auto">Auto-detect</option>
-              <option value="news">News Headline</option>
-              <option value="social">Social Media Post</option>
-              <option value="caption">Image Caption</option>
-              <option value="article">Article Excerpt</option>
+            <label class="form-label">Detection Target</label>
+            <select class="form-select" name="detection_mode">
+              <option value="ai_vs_human">AI-Generated vs Human-Written (Authenticity)</option>
+              <option value="misinformation">Misinformation / Fake News</option>
+              <option value="sentiment">Sentiment & Bias</option>
             </select>
           </div>
         </div>
@@ -86,51 +150,50 @@
       <div class="submit-section animate-fade-up delay-100">
         <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn">
           <i data-lucide="scan-text"></i>
-          Analyze Text
+          Check Text Authenticity
         </button>
         <div class="submit-label">
-          <i data-lucide="lock"></i>
-          Analysis takes ~3 seconds
+          <i data-lucide="shield-check"></i>
+          Detects AI generation & humanization
         </div>
       </div>
 
       <div class="model-card animate-fade-up delay-200">
-        <div class="model-card-title">AI Models Active</div>
+        <div class="model-card-title">Active AI Classifiers</div>
         <div class="model-row">
-          <span class="model-name">NLP Classifier</span>
-          <span class="model-status">● Ready</span>
+          <span class="model-name">AI Text Classifier</span>
+          <span class="model-status">● Active</span>
         </div>
         <div class="model-row">
-          <span class="model-name">Sentiment Analysis</span>
-          <span class="model-status">● Ready</span>
+          <span class="model-name">Human vs AI Scoring</span>
+          <span class="model-status">● Active</span>
         </div>
         <div class="model-row">
-          <span class="model-name">Fact Cross-check</span>
-          <span class="model-status" style="color: var(--warning);">◐ Beta</span>
+          <span class="model-name">OCR Text Engine</span>
+          <span class="model-status" style="color: var(--accent-primary);">● Tesseract.js</span>
         </div>
       </div>
 
       <div class="tips-card animate-fade-up delay-300">
         <div class="tips-title">
           <i data-lucide="lightbulb"></i>
-          Tips for best results
+          Tips for Accurate Detection
         </div>
-        <div class="tip-item">Paste the complete headline or article intro</div>
-        <div class="tip-item">Context helps — include surrounding sentences</div>
-        <div class="tip-item">Works best with factual claims and news content</div>
-        <div class="tip-item">Minimum 10 words for accurate analysis</div>
-        <div class="tip-item">Maximum 5,000 characters supported</div>
+        <div class="tip-item">Copy & paste at least 15-20 words for higher confidence</div>
+        <div class="tip-item">For images: ensure good contrast and legible text</div>
+        <div class="tip-item">You can review & edit extracted text before submitting</div>
+        <div class="tip-item">Checks for typical LLM burstiness, perplexity & markers</div>
       </div>
 
       <!-- Example Texts -->
       <div class="card animate-fade-up delay-400">
-        <div class="card-title" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">Try Examples</div>
+        <div class="card-title" style="font-size: var(--text-sm); margin-bottom: var(--space-3);">Try Sample Prompts</div>
         <div class="flex flex-col gap-2">
-          <button type="button" class="btn btn-glass btn-sm" onclick="document.getElementById('text-input').value='Breaking: Scientists discover cure for cancer using common household items. Experts confirm 100% success rate in trials.'">
-            Misleading headline
+          <button type="button" class="btn btn-glass btn-sm" onclick="applySample('ai')">
+            AI-Style Paragraph
           </button>
-          <button type="button" class="btn btn-glass btn-sm" onclick="document.getElementById('text-input').value='NASA confirms Mars Perseverance rover has successfully collected its 23rd rock sample from the Jezero Crater region.'">
-            Authentic news
+          <button type="button" class="btn btn-glass btn-sm" onclick="applySample('human')">
+            Human-Written Experience
           </button>
         </div>
       </div>
@@ -143,21 +206,172 @@
 
 {% block extra_js %}
 <script>
+  const textInput = document.getElementById('text-input');
+  const charCount = document.getElementById('char-count');
+  const wordCount = document.getElementById('word-count');
+  const sourceType = document.getElementById('source-type');
+
+  // Character & Word Counter
+  function updateCounts() {
+    const text = textInput.value;
+    charCount.textContent = `${text.length} / 5000 chars`;
+    const words = text.trim() ? text.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
+    wordCount.textContent = `${words} words`;
+  }
+  textInput.addEventListener('input', updateCounts);
+
   // Paste button
   document.getElementById('paste-btn')?.addEventListener('click', async () => {
     try {
       const text = await navigator.clipboard.readText();
-      document.getElementById('text-input').value = text;
-      document.getElementById('text-input').dispatchEvent(new Event('input'));
+      textInput.value = text;
+      updateCounts();
+      if (window.showToast) showToast('Text pasted from clipboard', 'success');
     } catch (e) {
-      if (window.showToast) showToast('Clipboard access denied', 'error');
+      if (window.showToast) showToast('Clipboard access denied. Please paste manually.', 'error');
     }
   });
 
   // Clear button
   document.getElementById('clear-btn')?.addEventListener('click', () => {
-    document.getElementById('text-input').value = '';
-    document.getElementById('text-input').dispatchEvent(new Event('input'));
+    textInput.value = '';
+    updateCounts();
+    document.getElementById('ocr-badge-indicator').style.display = 'none';
   });
+
+  // Mode Switcher
+  function switchMode(mode) {
+    const tabDirect = document.getElementById('tab-direct');
+    const tabOcr = document.getElementById('tab-ocr');
+    const ocrUploadCard = document.getElementById('ocr-upload-card');
+    const textSectionTitle = document.getElementById('text-section-title');
+
+    if (mode === 'ocr') {
+      tabDirect.classList.remove('active');
+      tabOcr.classList.add('active');
+      ocrUploadCard.style.display = 'block';
+      sourceType.value = 'image_ocr';
+      textSectionTitle.textContent = 'Extracted & Reviewable Text';
+    } else {
+      tabOcr.classList.remove('active');
+      tabDirect.classList.add('active');
+      ocrUploadCard.style.display = 'none';
+      sourceType.value = 'direct_text';
+      textSectionTitle.textContent = 'Enter Text to Analyze';
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // OCR Dropzone & Tesseract Handling
+  const ocrDropzone = document.getElementById('ocr-dropzone');
+  const ocrImageInput = document.getElementById('ocr-image-input');
+  const ocrPreviewBox = document.getElementById('ocr-preview-box');
+  const ocrPreviewImg = document.getElementById('ocr-preview-img');
+  const ocrProgressSpinner = document.getElementById('ocr-progress-spinner');
+  const ocrStatusText = document.getElementById('ocr-status-text');
+  const ocrBadge = document.getElementById('ocr-badge-indicator');
+
+  ocrDropzone.addEventListener('click', () => ocrImageInput.click());
+
+  ocrDropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    ocrDropzone.classList.add('dragover');
+  });
+
+  ocrDropzone.addEventListener('dragleave', () => {
+    ocrDropzone.classList.remove('dragover');
+  });
+
+  ocrDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    ocrDropzone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processOCRImage(e.dataTransfer.files[0]);
+    }
+  });
+
+  ocrImageInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      processOCRImage(e.target.files[0]);
+    }
+  });
+
+  function processOCRImage(file) {
+    if (!file.type.startsWith('image/')) {
+      if (window.showToast) showToast('Please select a valid image file (PNG, JPG, WEBP).', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      ocrPreviewImg.src = e.target.result;
+      ocrPreviewBox.classList.add('visible');
+      ocrProgressSpinner.style.display = 'flex';
+      ocrStatusText.textContent = 'Extracting text with OCR...';
+
+      if (typeof Tesseract !== 'undefined') {
+        Tesseract.recognize(e.target.result, 'eng', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              ocrStatusText.textContent = `Extracting text: ${Math.round((m.progress || 0) * 100)}%`;
+            }
+          }
+        }).then(({ data: { text } }) => {
+          ocrProgressSpinner.style.display = 'none';
+          const cleanedText = text.trim();
+          if (cleanedText) {
+            textInput.value = cleanedText;
+            updateCounts();
+            ocrBadge.style.display = 'inline-flex';
+            if (window.showToast) showToast('Text extracted successfully from image!', 'success');
+          } else {
+            ocrStatusText.textContent = 'No text detected in this image. You can type or paste manually.';
+            ocrProgressSpinner.style.display = 'none';
+            if (window.showToast) showToast('No text found in image. Try another screenshot or clear image.', 'warning');
+          }
+          if (window.lucide) lucide.createIcons();
+        }).catch(err => {
+          console.error(err);
+          ocrProgressSpinner.style.display = 'none';
+          ocrStatusText.textContent = 'OCR extraction failed. You can paste text manually.';
+          if (window.showToast) showToast('Could not extract text. Please paste text directly.', 'error');
+        });
+      } else {
+        ocrProgressSpinner.style.display = 'none';
+        ocrStatusText.textContent = 'OCR Engine unavailable. Please paste text directly.';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetOCR() {
+    ocrImageInput.value = '';
+    ocrPreviewBox.classList.remove('visible');
+    ocrPreviewImg.src = '';
+    ocrBadge.style.display = 'none';
+  }
+
+  // Sample Prompts
+  function applySample(type) {
+    if (type === 'ai') {
+      textInput.value = "In today's fast-paced digital era, artificial intelligence stands as a paramount testament to technological advancement. Furthermore, it is essential to remember that leveraging multifaceted machine learning models fosters unparalleled efficiency across diverse industrial sectors.";
+    } else {
+      textInput.value = "I visited the local farmers market this morning with my family. We picked up fresh strawberries and had a really wonderful chat with the baker who shared her secret sourdough recipe with us.";
+    }
+    updateCounts();
+    if (window.showToast) showToast('Sample text inserted!', 'info');
+  }
+
+  // Initial update
+  updateCounts();
 </script>
+<style>
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
 {% endblock %}
