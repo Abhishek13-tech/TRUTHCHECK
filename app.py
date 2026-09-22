@@ -82,6 +82,10 @@ def check_content():
             text_result["ai_detection"]["human_percentage"]
         )
 
+        classification = (
+            text_result["ai_detection"]["classification"]
+        )
+
         # Web source found
         if text_result["web_source"]:
 
@@ -96,6 +100,7 @@ def check_content():
             final_result = (
                 f"AI Generated: {ai_percentage}%. "
                 f"Human Written: {human_percentage}%. "
+                f"Classification: {classification}. "
                 f"Web Similarity: {similarity}%. "
                 f"Status: {source_status}."
             )
@@ -106,6 +111,7 @@ def check_content():
             final_result = (
                 f"AI Generated: {ai_percentage}%. "
                 f"Human Written: {human_percentage}%. "
+                f"Classification: {classification}. "
                 f"No matching web source found."
             )
 

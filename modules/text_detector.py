@@ -1,21 +1,39 @@
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 import re
 
 
-# Load AI text detection model
+# ==========================================
+# Load our trained AI/Human detection model
+# ==========================================
+
+MODEL_PATH = "models/ai_detector/final"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_PATH
+)
+
 detector = pipeline(
     "text-classification",
-    model="rasbt/ai-text-detector-distilbert",
-    top_k=None
+    model=model,
+    tokenizer=tokenizer,
+    top_k=None,
+    truncation=True,
+    max_length=256
 )
 
 
-def split_text(text, max_words=80):
-    """
-    Split long text into smaller chunks.
-    """
+# ==========================================
+# Split long text into smaller chunks
+# ==========================================
 
-    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+def split_text(text, max_words=80):
+
+    sentences = re.split(
+        r'(?<=[.!?])\s+',
+        text.strip()
+    )
 
     chunks = []
     current_chunk = []
@@ -25,25 +43,34 @@ def split_text(text, max_words=80):
         words = sentence.split()
 
         if len(current_chunk) + len(words) <= max_words:
+
             current_chunk.extend(words)
+
         else:
+
             if current_chunk:
-                chunks.append(" ".join(current_chunk))
+                chunks.append(
+                    " ".join(current_chunk)
+                )
 
             current_chunk = words
 
     if current_chunk:
-        chunks.append(" ".join(current_chunk))
+        chunks.append(
+            " ".join(current_chunk)
+        )
 
     return chunks
 
 
+# ==========================================
+# AI Text Detection
+# ==========================================
+
 def detect_ai_text(text):
-    """
-    Detect AI-generated and human-written percentages.
-    """
 
     if not text or not text.strip():
+
         return {
             "ai_percentage": 0.0,
             "human_percentage": 0.0
@@ -53,6 +80,10 @@ def detect_ai_text(text):
 
     total_ai_score = 0.0
     total_human_score = 0.0
+
+    # Get the labels from our trained model
+    human_label = model.config.id2label[0].upper()
+    ai_label = model.config.id2label[1].upper()
 
     for chunk in chunks:
 
@@ -68,18 +99,11 @@ def detect_ai_text(text):
             label = result["label"].upper()
             score = float(result["score"])
 
-            if "AI" in label:
+            if label == ai_label:
                 ai_score = score
 
-            elif "HUMAN" in label:
+            elif label == human_label:
                 human_score = score
-
-        # Fallback if only one score is returned
-        if ai_score == 0.0 and human_score > 0.0:
-            ai_score = 1.0 - human_score
-
-        elif human_score == 0.0 and ai_score > 0.0:
-            human_score = 1.0 - ai_score
 
         total_ai_score += ai_score
         total_human_score += human_score
@@ -94,10 +118,11 @@ def detect_ai_text(text):
         total_human_score / number_of_chunks
     ) * 100
 
-    # Make sure total is exactly 100%
+    # Normalize to exactly 100%
     total = ai_percentage + human_percentage
 
     if total > 0:
+
         ai_percentage = (
             ai_percentage / total
         ) * 100
@@ -106,22 +131,51 @@ def detect_ai_text(text):
             human_percentage / total
         ) * 100
 
+    # ==========================================
+# Final Classification
+# ==========================================
+
+    if ai_percentage >= 75:
+        classification = "Likely AI-generated"
+
+    elif ai_percentage <= 25:
+        classification = "Likely Human-written"
+
+    else:
+        classification = "Uncertain"
+
+
     return {
         "ai_percentage": round(ai_percentage, 2),
-        "human_percentage": round(human_percentage, 2)
-    }
+    "human_percentage": round(human_percentage, 2),
+    "classification": classification
+}
 
 
-# Test
+# ==========================================
+# Local Test
+# ==========================================
+
 if __name__ == "__main__":
 
     sample_text = """
-    Artificial intelligence is changing the way people learn and work.
-    Technology is becoming an important part of modern education.
-    Students use digital tools to improve their learning experience.
+    Artificial intelligence is changing the way
+    people learn and work. Technology is becoming
+    an important part of modern education.
+    Students use digital tools to improve their
+    learning experience.
     """
 
     result = detect_ai_text(sample_text)
 
-    print("AI Generated:", result["ai_percentage"], "%")
-    print("Human Written:", result["human_percentage"], "%")
+    print(
+        "AI Generated:",
+        result["ai_percentage"],
+        "%"
+    )
+
+    print(
+        "Human Written:",
+        result["human_percentage"],
+        "%"
+    )
