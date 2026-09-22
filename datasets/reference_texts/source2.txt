@@ -1,1 +1,0 @@
-Machine learning is a branch of artificial intelligence that allows computers to learn from data and improve their performance without being explicitly programmed.
