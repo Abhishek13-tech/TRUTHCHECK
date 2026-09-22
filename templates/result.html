@@ -70,7 +70,24 @@
 
             <p>
                 <strong>Web Similarity:</strong>
-                {{ text_result.web_source.similarity }}%
+                {{ "%.2f"|format(text_result.web_source.similarity) }}%
+                {% if text_result.web_source %}
+    <p>
+        <strong>Matching Source:</strong>
+        {{ text_result.web_source.title }}
+    </p>
+
+    <p>
+        <strong>Source URL:</strong>
+        <a
+            href="{{ text_result.web_source.url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            View Source
+        </a>
+    </p>
+{% endif %}
             </p>
 
             <p>

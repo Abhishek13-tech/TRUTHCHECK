@@ -89,8 +89,9 @@ def check_content():
         # Web source found
         if text_result["web_source"]:
 
-            similarity = (
-                text_result["web_source"]["similarity"]
+            similarity = round(
+                float(text_result["web_source"]["similarity"]),
+                2
             )
 
             source_status = (
@@ -101,7 +102,7 @@ def check_content():
                 f"AI Generated: {ai_percentage}%. "
                 f"Human Written: {human_percentage}%. "
                 f"Classification: {classification}. "
-                f"Web Similarity: {similarity}%. "
+                f"Web Similarity: {similarity:.2f}%. "
                 f"Status: {source_status}."
             )
 

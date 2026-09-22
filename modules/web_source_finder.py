@@ -2,28 +2,56 @@ from ddgs import DDGS
 
 def search_web_sources(text, max_results=5):
     """
-    Search the web for possible sources related to the given text.
+    Search the web using exact phrase and normal context queries.
     """
 
     if not text or not text.strip():
         return []
 
-    # Use a shorter query for web search
-    query = " ".join(text.strip().split()[:40])
+    words = text.strip().split()
+
+    if len(words) > 12:
+        exact_phrase = " ".join(words[:12])
+        normal_query = " ".join(words[:40])
+    else:
+        exact_phrase = " ".join(words)
+        normal_query = " ".join(words)
+
+    exact_query = f'"{exact_phrase}"'
+    search_limit = min(max_results, 3)
 
     results = []
+    seen_urls = set()
 
     try:
         with DDGS() as ddgs:
-            search_results = ddgs.text(
-                query,
-                max_results=max_results
+
+            # Exact phrase search
+            exact_results = ddgs.text(
+                exact_query,
+                max_results=search_limit
             )
 
-            for item in search_results:
+            # Normal context search
+            normal_results = ddgs.text(
+                normal_query,
+                max_results=search_limit
+            )
+
+            all_results = list(exact_results) + list(normal_results)
+
+            for item in all_results:
+
+                url = item.get("href", "")
+
+                if not url or url in seen_urls:
+                    continue
+
+                seen_urls.add(url)
+
                 results.append({
                     "title": item.get("title", ""),
-                    "url": item.get("href", ""),
+                    "url": url,
                     "snippet": item.get("body", "")
                 })
 
@@ -91,6 +119,9 @@ def extract_webpage_text(url):
 
         text = soup.get_text(" ", strip=True)
 
+        # Limit very large webpages to reduce processing time
+        text = text[:30000]
+
         return text
 
     except Exception as error:
@@ -129,15 +160,15 @@ def find_best_web_source(user_text, max_results=5):
         current_match = {
             "title": source["title"],
             "url": source["url"],
-            "similarity": similarity_result["similarity"],
+            "similarity": float(similarity_result["similarity"]),
             "status": similarity_result["status"]
         }
 
-        if (
-            best_match is None
-            or current_match["similarity"]
-            > best_match["similarity"]
-        ):
-            best_match = current_match
-
+        if current_match["similarity"] > 0:
+            if (
+                best_match is None
+                or current_match["similarity"]
+                > best_match["similarity"]
+            ):
+                best_match = current_match
     return best_match

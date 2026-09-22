@@ -4,7 +4,7 @@ from .web_source_finder import find_best_web_source
 
 def analyze_text(user_text):
     """
-    Complete text analysis:
+    Complete text analysis:predictions = external_output.predictions.argmax(axis=-1)
     1. AI/Human detection
     2. Web source detection
     """
