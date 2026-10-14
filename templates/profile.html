@@ -1,148 +1,110 @@
 {% extends "base.html" %}
-{% block title %}Profile{% endblock %}
-{% block breadcrumb %}Profile{% endblock %}
+{% block title %}User Profile{% endblock %}
 
 {% block content %}
-<div class="page-header animate-fade-up">
-  <h1 class="page-title">My Profile</h1>
-  <p class="page-subtitle">Manage your account details and view your statistics.</p>
+
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+    <span>Account Settings</span>
+  </div>
+  <h1 class="hero-title">User Profile</h1>
+  <p class="hero-desc">Manage your credentials, authentication provider, and view your account details.</p>
 </div>
 
-<div class="grid-2">
+<div style="max-width: 650px; margin: 0 auto;">
+  <div class="modern-card">
 
-  <!-- Left: Profile Info -->
-  <div class="flex-col gap-6">
-
-    <div class="card animate-fade-up delay-100">
-      <div class="flex items-center gap-6 mb-6">
-        <div style="width:100px;height:100px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;color:white;position:relative;">
-          U
-          <button style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-glass);display:flex;align-items:center;justify-content:center;color:var(--text-primary);cursor:pointer;">
-            <i data-lucide="camera" style="width:16px;height:16px;"></i>
-          </button>
+    <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle);">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 700; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+        {{ current_user.get_display_name()[0] | upper }}
+      </div>
+      <div>
+        <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">
+          {{ current_user.get_display_name() }}
+        </h2>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span class="tag-badge" style="background: var(--primary-light); color: var(--primary);">
+            <i data-lucide="{{ 'mail' if current_user.auth_method == 'email' else ('phone' if current_user.auth_method == 'phone' else 'globe') }}" style="width: 12px; height: 12px;"></i>
+            Signed in via {{ current_user.auth_method | capitalize }}
+          </span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Member since {{ current_user.created_at.strftime('%B %Y') }}</span>
         </div>
-        <div>
-          <h2 style="font-size:24px;color:var(--text-primary);margin-bottom:4px;">User</h2>
-          <p style="color:var(--text-muted);font-size:14px;margin-bottom:8px;">user@example.com</p>
-          <span class="badge badge-image">Free Plan</span>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" value="{{ current_user.get_display_name() }}" readonly style="background: var(--bg-secondary);">
+      </div>
+
+      {% if current_user.email %}
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Email / Gmail Address</label>
+          <input type="text" class="form-control" value="{{ current_user.email }}" readonly style="background: var(--bg-secondary);">
+        </div>
+      {% endif %}
+
+      {% if current_user.phone %}
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Phone Number</label>
+          <input type="text" class="form-control" value="{{ current_user.phone }}" readonly style="background: var(--bg-secondary);">
+        </div>
+      {% endif %}
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Account Security</label>
+        <div style="padding: 0.85rem 1rem; background: var(--success-light); border: 1px solid var(--success-border); border-radius: var(--radius-md); display: flex; align-items: center; gap: 0.6rem; color: #065F46; font-size: 0.9rem; font-weight: 500;">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+          <span>Account authenticated and active. Protected with session-based security.</span>
         </div>
       </div>
 
-      <form>
-        <div class="grid-2 mb-4">
-          <div class="form-group">
-            <label class="form-label">First Name</label>
-            <input type="text" class="form-input" value="User">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Last Name</label>
-            <input type="text" class="form-input" value="Demo">
-          </div>
-        </div>
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+        <a href="{{ url_for('logout') }}" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger-border); flex: 1;">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          Sign Out of Account
+        </a>
+      </div>
 
-        <div class="form-group mb-6">
-          <label class="form-label">Email Address</label>
-          <input type="email" class="form-input" value="user@example.com" disabled>
-          <div class="form-hint">Contact support to change your email address.</div>
-        </div>
-
-        <button type="button" class="btn btn-primary">
-          <i data-lucide="save"></i> Save Changes
-        </button>
-      </form>
-    </div>
-
-    <!-- Security -->
-    <div class="card animate-fade-up delay-200">
-      <div class="card-title">Security</div>
-
-      <form>
-        <div class="form-group mb-4">
-          <label class="form-label">Current Password</label>
-          <input type="password" class="form-input" placeholder="Enter current password">
-        </div>
-        <div class="form-group mb-4">
-          <label class="form-label">New Password</label>
-          <input type="password" class="form-input" placeholder="Enter new password">
-        </div>
-        <div class="form-group mb-6">
-          <label class="form-label">Confirm New Password</label>
-          <input type="password" class="form-input" placeholder="Confirm new password">
-        </div>
-
-        <button type="button" class="btn btn-outline">
-          <i data-lucide="key"></i> Update Password
-        </button>
-      </form>
     </div>
 
   </div>
 
-  <!-- Right: Stats & Plan -->
-  <div class="flex-col gap-6">
+  <!-- Change Password Card (For Email/Password users) -->
+  {% if current_user.password_hash %}
+    <div class="modern-card" style="margin-top: 1.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="lock" style="width: 18px; height: 18px; color: var(--primary);"></i>
+        Change Password
+      </h3>
 
-    <!-- Plan info -->
-    <div class="card animate-fade-up delay-300" style="background: linear-gradient(135deg, rgba(108,99,255,0.1) 0%, rgba(0,212,255,0.05) 100%); border-color: var(--accent-primary-soft);">
-      <div class="flex justify-between items-center mb-4">
-        <div class="card-title" style="margin:0;">Current Plan</div>
-        <span class="badge" style="background:var(--accent-primary);color:white;">Free Tier</span>
-      </div>
+      <form action="{{ url_for('change_password') }}" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="current_password">Current Password</label>
+          <input type="password" id="current_password" name="current_password" class="form-control" placeholder="Enter your current password" required>
+        </div>
 
-      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:24px;line-height:1.6;">
-        You are currently on the Free Tier, which includes 50 content checks per month and standard API access.
-      </p>
+        <div class="form-group">
+          <label class="form-label" for="new_password">New Password</label>
+          <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+        </div>
 
-      <div style="margin-bottom:8px;display:flex;justify-content:space-between;font-size:14px;">
-        <span style="color:var(--text-primary);font-weight:600;">24 / 50 Checks Used</span>
-        <span style="color:var(--text-muted);">This Month</span>
-      </div>
-      <div style="height:6px;background:rgba(0,0,0,0.3);border-radius:3px;margin-bottom:24px;overflow:hidden;">
-        <div style="height:100%;width:48%;background:var(--grad-primary);border-radius:3px;"></div>
-      </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">Confirm New Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter new password" minlength="6" required>
+        </div>
 
-      <button type="button" class="btn btn-full" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-glass);">
-        <i data-lucide="zap" style="color:var(--warning);"></i> Upgrade to Pro
-      </button>
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+          Update Password
+        </button>
+      </form>
     </div>
-
-    <!-- Quick Stats -->
-    <div class="card animate-fade-up delay-400">
-      <div class="card-title">Lifetime Stats</div>
-
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border-glass);">
-          <div style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);">
-            <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-glass);display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="check-circle" style="color:var(--success);"></i>
-            </div>
-            Total Checks
-          </div>
-          <div style="font-size:20px;font-weight:700;font-family:var(--font-display);">142</div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border-glass);">
-          <div style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);">
-            <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-glass);display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="alert-triangle" style="color:var(--danger);"></i>
-            </div>
-            Fakes Detected
-          </div>
-          <div style="font-size:20px;font-weight:700;font-family:var(--font-display);">34</div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:12px;color:var(--text-secondary);">
-            <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-glass);display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="calendar"></i>
-            </div>
-            Member Since
-          </div>
-          <div style="font-size:14px;color:var(--text-primary);font-weight:500;">Aug 2026</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  {% endif %}
 
 </div>
 

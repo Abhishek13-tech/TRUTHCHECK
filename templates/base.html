@@ -3,193 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TRUTHCHECK — AI & Content Authenticity Platform. Detect fake images, manipulated text, and misinformation using advanced AI.">
+  <meta name="description" content="TRUTHCHECK — Simple, Fast & Accurate AI Content & Image Authenticity Verification">
   <title>{% block title %}TRUTHCHECK{% endblock %} — AI Authenticity Platform</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236c63ff'/><path d='M8 16l6 6L24 10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><path d='M8 16l6 6L24 10' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
-  <!-- CSS Design System -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/design-tokens.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
-
-  <!-- Page-specific CSS -->
-  {% block extra_css %}{% endblock %}
+  <!-- Simple Modern Design System -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-simple.css') }}">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  {% block extra_css %}{% endblock %}
 </head>
-
 <body>
-  <!-- Ambient Background Orbs -->
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
-  <div class="bg-orb bg-orb-3"></div>
 
-  <!-- Toast Container -->
-  <div id="toast-container"></div>
+  <!-- Clean Top Navigation Bar -->
+  <header class="modern-navbar">
+    <div class="nav-container">
 
-  <div class="app-shell" id="app-shell">
-
-    <!-- ═══════════════════════════════════════════════════
-         SIDEBAR
-         ═══════════════════════════════════════════════════ -->
-    <aside class="sidebar" id="sidebar">
-
-      <!-- Logo -->
-      <div class="sidebar-logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
+      <!-- Logo & Brand -->
+      <a href="{{ url_for('dashboard') }}" class="nav-brand">
+        <div class="nav-brand-badge">
+          <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
         </div>
-        <span class="logo-text">TRUTHCHECK</span>
-      </div>
+        <span>TRUTHCHECK</span>
+      </a>
 
-      <!-- Navigation -->
-      <nav class="sidebar-nav">
-
-        <span class="nav-section-label">Main</span>
-
-        <a href="{{ url_for('dashboard') }}" class="nav-item">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
-        </a>
-
-        <span class="nav-section-label">Analysis</span>
-
-        <a href="{{ url_for('image_check') }}" class="nav-item">
-          <i data-lucide="image"></i>
-          <span>Image Check</span>
-        </a>
-
-        <a href="{{ url_for('text_check') }}" class="nav-item">
-          <i data-lucide="file-text"></i>
-          <span>Text Check</span>
-        </a>
-
-        <span class="nav-section-label">Records</span>
-
-        <a href="{{ url_for('history') }}" class="nav-item">
-          <i data-lucide="clock"></i>
-          <span>History</span>
-        </a>
-
-        <span class="nav-section-label">Account</span>
-
-        <a href="{{ url_for('profile') }}" class="nav-item">
-          <i data-lucide="user"></i>
-          <span>Profile</span>
-        </a>
-
-        <a href="{{ url_for('settings') }}" class="nav-item">
-          <i data-lucide="settings"></i>
-          <span>Settings</span>
-        </a>
-
-        <a href="{{ url_for('about') }}" class="nav-item">
-          <i data-lucide="info"></i>
-          <span>About</span>
-        </a>
-
+      <!-- Navigation Links -->
+      <nav>
+        <ul class="nav-links">
+          <li>
+            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' or request.endpoint == 'index' %}active{% endif %}">
+              <i data-lucide="layout-grid" style="width: 17px; height: 17px;"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('image_check') }}" class="nav-link {% if request.endpoint == 'image_check' %}active{% endif %}">
+              <i data-lucide="image" style="width: 17px; height: 17px;"></i>
+              <span>Image Check</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('text_check') }}" class="nav-link {% if request.endpoint == 'text_check' %}active{% endif %}">
+              <i data-lucide="file-text" style="width: 17px; height: 17px;"></i>
+              <span>Text / OCR</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">
+              <i data-lucide="clock" style="width: 17px; height: 17px;"></i>
+              <span>History</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+              <i data-lucide="info" style="width: 17px; height: 17px;"></i>
+              <span>About</span>
+            </a>
+          </li>
+        </ul>
       </nav>
 
-      <!-- User Footer -->
-      <div class="sidebar-footer">
-        <a href="{{ url_for('profile') }}" class="sidebar-user" style="text-decoration:none;">
-          <div class="user-avatar">U</div>
-          <div class="user-info">
-            <div class="user-name">User</div>
-            <div class="user-role">Free Plan</div>
+      <!-- User Account / Logout Actions -->
+      <div class="nav-user">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('profile') }}" class="user-badge" title="Logged in as {{ current_user.get_identifier() }}">
+            <div class="user-avatar-circle">
+              {{ current_user.get_display_name()[0] | upper }}
+            </div>
+            <span>{{ current_user.get_display_name() }}</span>
+          </a>
+          <a href="{{ url_for('logout') }}" class="btn-signout" title="Sign out of TRUTHCHECK">
+            <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+            <span>Sign Out</span>
+          </a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.875rem;">
+            <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
+            <span>Sign In</span>
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="page-container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }}" style="margin-bottom: 1.5rem;">
+            <i data-lucide="{{ 'alert-circle' if category == 'error' else 'check-circle' }}" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+            <span>{{ message }}</span>
           </div>
-        </a>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="modern-footer">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+        <i data-lucide="shield-check" style="width: 16px; height: 16px; color: var(--primary);"></i>
+        TRUTHCHECK &copy; 2026
       </div>
-
-      <!-- Collapse Toggle -->
-      <button class="sidebar-toggle" id="sidebar-toggle" title="Collapse sidebar">
-        <i data-lucide="chevron-left"></i>
-      </button>
-
-    </aside>
-
-    <!-- ═══════════════════════════════════════════════════
-         TOPBAR
-         ═══════════════════════════════════════════════════ -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <!-- Mobile menu -->
-        <button class="icon-btn" id="mobile-menu-btn" style="display:none;">
-          <i data-lucide="menu"></i>
-        </button>
-
-        <div class="breadcrumb">
-          <span>TRUTHCHECK</span>
-          <i data-lucide="chevron-right" style="width:14px;height:14px;stroke:#3d4560;"></i>
-          <span class="current">{% block breadcrumb %}Dashboard{% endblock %}</span>
-        </div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">
+        AI-Powered Authenticity & Deepfake Detection Engine
       </div>
-
-      <div class="topbar-right">
-        <!-- Search -->
-        <div class="topbar-search">
-          <svg class="search-icon" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="text" placeholder="Search history..." id="global-search">
-        </div>
-
-        <!-- Notifications -->
-        <button class="icon-btn" title="Notifications">
-          <i data-lucide="bell"></i>
-          <span class="badge">3</span>
-        </button>
-
-        <!-- Theme (placeholder) -->
-        <button class="icon-btn" title="Toggle theme" id="theme-btn">
-          <i data-lucide="moon"></i>
-        </button>
-
-        <!-- User Avatar -->
-        <a href="{{ url_for('profile') }}" class="user-avatar" style="text-decoration:none; cursor:pointer;">U</a>
-      </div>
-    </header>
-
-    <!-- ═══════════════════════════════════════════════════
-         MAIN CONTENT
-         ═══════════════════════════════════════════════════ -->
-    <main class="main-content">
-      <div class="page-wrapper">
-        {% block content %}{% endblock %}
-      </div>
-    </main>
-
-  </div><!-- /.app-shell -->
-
-  <!-- JS -->
-  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
-
-  {% block extra_js %}{% endblock %}
+    </div>
+  </footer>
 
   <script>
-    // Init Lucide icons
     lucide.createIcons();
-
-    // Mobile menu show on small screens
-    if (window.innerWidth <= 720) {
-      const mobileBtn = document.getElementById('mobile-menu-btn');
-      if (mobileBtn) mobileBtn.style.display = 'flex';
-    }
-
-    // Stagger animate page items
-    document.querySelectorAll('.animate-fade-up').forEach((el, i) => {
-      el.style.animationDelay = (i * 80) + 'ms';
-    });
   </script>
-
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

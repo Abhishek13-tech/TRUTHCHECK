@@ -1,0 +1,75 @@
+/* dashboard_new.css - Enhanced modern dark theme dashboard */
+/* Extends existing design tokens and components */
+
+/* Welcome banner improvements */
+.dashboard-welcome {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.welcome-name {
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-2);
+}
+
+/* Stat cards with subtle hover lift and gradient border */
+.stat-card {
+  border: 2px solid transparent;
+  background: var(--bg-glass);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: var(--grad-primary);
+  border-radius: inherit;
+  z-index: -1;
+  transition: opacity var(--transition-fast);
+  opacity: 0;
+}
+.stat-card:hover::before {
+  opacity: 0.2;
+}
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+}
+
+/* Quick action cards – larger icons and hover glow */
+.quick-action-btn {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-4);
+  transition: all var(--transition-base);
+}
+.quick-action-btn:hover {
+  background: var(--bg-glass-hover);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 4px 12px var(--accent-primary-glow);
+}
+
+/* Chart cards with glass blur */
+.chart-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+/* Responsive tweaks – tighter spacing on mobile */
+@media (max-width: 768px) {
+  .dashboard-welcome { flex-direction: column; align-items: flex-start; }
+  .welcome-actions { width: 100%; justify-content: space-between; }
+}

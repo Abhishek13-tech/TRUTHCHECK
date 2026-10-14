@@ -1,4 +1,6 @@
 Flask
+Flask-Login
+Flask-SQLAlchemy
 tensorflow
 numpy
 pandas

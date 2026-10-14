@@ -1,115 +1,150 @@
 {% extends "base.html" %}
-{% block title %}Image Check{% endblock %}
-{% block breadcrumb %}Image Check{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/checker.css') }}">
-{% endblock %}
+{% block title %}Image Authenticity Check{% endblock %}
 
 {% block content %}
 
-<div class="page-header animate-fade-up">
-  <h1 class="page-title">Image Authenticity Check</h1>
-  <p class="page-subtitle">Upload an image to detect deepfakes, generative AI manipulation, and visual inconsistencies.</p>
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="image" style="width: 14px; height: 14px;"></i>
+    <span>Visual AI Detection</span>
+  </div>
+  <h1 class="hero-title">Image Authenticity Check</h1>
+  <p class="hero-desc">
+    Upload any photo, meme, or graphic to detect AI image generators (Midjourney, Stable Diffusion, DALL-E) and deepfakes.
+  </p>
 </div>
 
 {% if error %}
-<div class="auth-alert error animate-fade-up" style="max-width: 700px; margin-bottom: 1.5rem;">
-  <i data-lucide="alert-circle"></i>
-  {{ error }}
-</div>
+  <div class="alert alert-danger" style="max-width: 650px; margin: 0 auto 1.5rem;">
+    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
+    <span>{{ error }}</span>
+  </div>
 {% endif %}
 
-<form action="{{ url_for('check_content') }}" method="POST" enctype="multipart/form-data" id="check-form">
+<div style="max-width: 650px; margin: 0 auto;">
+  <div class="modern-card">
 
-  <div class="checker-layout">
-
-    <!-- ── Main Panel ─────────────────────────────────── -->
-    <div class="checker-main">
-
-      <!-- Upload Zone -->
-      <div class="upload-zone animate-fade-up delay-100">
-        <div class="card-title" style="margin-bottom: var(--space-4);">
-          <i data-lucide="upload-cloud" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;stroke:var(--accent-primary);"></i>
-          Upload Image
+    <form action="{{ url_for('check_content') }}" method="POST" enctype="multipart/form-data" id="image-form">
+      
+      <!-- Drag and drop zone -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('image-input').click()">
+        <input type="file" id="image-input" name="image" accept=".png,.jpg,.jpeg,.webp" required style="display: none;">
+        
+        <div class="dropzone-icon">
+          <i data-lucide="upload-cloud" style="width: 28px; height: 28px;"></i>
         </div>
+        <div class="dropzone-title">Click to upload or drag & drop image</div>
+        <div class="dropzone-desc">Supports PNG, JPG, JPEG, and WEBP (up to 15MB)</div>
 
-        <!-- Drag-Drop Box -->
-        <div class="upload-box" id="image-upload-box">
-          <div class="upload-icon">
-            <i data-lucide="image"></i>
+        <!-- Preview container -->
+        <div id="preview-box" style="display: none; margin-top: 1.5rem; text-align: center;">
+          <div style="position: relative; display: inline-block;">
+            <img id="preview-image" src="" alt="Image Preview" style="max-height: 260px; max-width: 100%; border-radius: 12px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+            <button type="button" onclick="clearImagePreview(event)" style="position: absolute; top: -10px; right: -10px; width: 28px; height: 28px; border-radius: 50%; background: #EF4444; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+              <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            </button>
           </div>
-          <div class="upload-title">Drag & Drop or Click to Upload</div>
-          <div class="upload-subtitle">Drop your image here, or click to browse files</div>
-          <div class="upload-formats">
-            <span class="format-chip">.PNG</span>
-            <span class="format-chip">.JPG</span>
-            <span class="format-chip">.JPEG</span>
-            <span class="format-chip">.WEBP</span>
-          </div>
-
-          <!-- Hidden input -->
-          <input type="file" id="image-input" name="image" accept=".png,.jpg,.jpeg,.webp" required style="display:none;">
-        </div>
-
-        <!-- Preview -->
-        <div class="upload-preview" id="image-preview">
-          <img src="" alt="Preview" id="preview-img">
-          <button type="button" class="preview-remove" title="Remove image">
-            <i data-lucide="x"></i>
-          </button>
+          <p id="file-name" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
         </div>
       </div>
 
-    <!-- ── Sidebar ─────────────────────────────────────── -->
-    <div class="checker-sidebar">
-
-      <!-- Submit -->
-      <div class="submit-section animate-fade-up delay-100">
-        <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-btn">
-          <i data-lucide="shield"></i>
-          Analyze Image
+      <!-- Action Button -->
+      <div style="margin-top: 1.75rem;">
+        <button type="submit" class="btn btn-primary btn-full" id="analyze-btn">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+          Analyze Image Authenticity
         </button>
-        <div class="submit-label">
-          <i data-lucide="lock"></i>
-          Secure analysis · Results in ~3 seconds
-        </div>
       </div>
 
-      <!-- AI Models -->
-      <div class="model-card animate-fade-up delay-200">
-        <div class="model-card-title">AI Models Active</div>
-        <div class="model-row">
-          <span class="model-name">Visual Deepfake Detector</span>
-          <span class="model-status">● Ready</span>
-        </div>
-        <div class="model-row">
-          <span class="model-name">EXIF & Artifact Analyzer</span>
-          <span class="model-status">● Ready</span>
-        </div>
-        <div class="model-row">
-          <span class="model-name">Generative AI Classifier</span>
-          <span class="model-status">● Ready</span>
-        </div>
-      </div>
-
-      <!-- Tips -->
-      <div class="tips-card animate-fade-up delay-300">
-        <div class="tips-title">
-          <i data-lucide="lightbulb"></i>
-          Tips for best results
-        </div>
-        <div class="tip-item">Use high-resolution images when possible</div>
-        <div class="tip-item">Screenshots with text? Use the dedicated <strong>Text Check</strong> tab for OCR extraction.</div>
-        <div class="tip-item">Works best with photographic images, faces, and digital art</div>
-        <div class="tip-item">Supported formats: PNG, JPG, JPEG, WEBP</div>
-        <div class="tip-item">Maximum file size: 20MB</div>
-      </div>
-
-    </div>
+    </form>
 
   </div>
 
-</form>
+  <!-- Helpful Info card -->
+  <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--text-muted);">
+    <span style="display: flex; align-items: center; gap: 0.35rem;">
+      <i data-lucide="lock" style="width: 14px; height: 14px; color: var(--success);"></i>
+      Private & Secure
+    </span>
+    <span>•</span>
+    <span style="display: flex; align-items: center; gap: 0.35rem;">
+      <i data-lucide="zap" style="width: 14px; height: 14px; color: var(--accent);"></i>
+      Fast Analysis (~2s)
+    </span>
+    <span>•</span>
+    <span style="display: flex; align-items: center; gap: 0.35rem;">
+      <i data-lucide="archive" style="width: 14px; height: 14px; color: var(--primary);"></i>
+      Auto-saved to History
+    </span>
+  </div>
+</div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const fileInput = document.getElementById('image-input');
+  const dropzone = document.getElementById('dropzone');
+  const previewBox = document.getElementById('preview-box');
+  const previewImage = document.getElementById('preview-image');
+  const fileNameDisplay = document.getElementById('file-name');
+  const analyzeBtn = document.getElementById('analyze-btn');
+
+  // Drag and drop events
+  ['dragenter', 'dragover'].forEach(name => {
+    dropzone.addEventListener(name, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(name => {
+    dropzone.addEventListener(name, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+      handleFile(files[0]);
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      handleFile(fileInput.files[0]);
+    }
+  });
+
+  function handleFile(file) {
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (PNG, JPG, WEBP).');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.src = e.target.result;
+      fileNameDisplay.textContent = file.name;
+      previewBox.style.display = 'block';
+      lucide.createIcons();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearImagePreview(e) {
+    e.stopPropagation();
+    fileInput.value = '';
+    previewImage.src = '';
+    fileNameDisplay.textContent = '';
+    previewBox.style.display = 'none';
+  }
+
+  document.getElementById('image-form').addEventListener('submit', () => {
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<span style="display:inline-block; animation: spin 1s linear infinite;">⏳</span> Analyzing Content...';
+  });
+</script>
 {% endblock %}

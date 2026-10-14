@@ -1,6 +1,6 @@
 /* ============================================================
    TRUTHCHECK — Base Styles
-   Resets, global defaults, scrollbar, selection
+   Resets, global defaults, scrollbar, layout, typography
    ============================================================ */
 
 *, *::before, *::after {
@@ -19,50 +19,51 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
+  color: var(--text-main);
+  line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 /* ── Custom Scrollbar ──────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb {
-  background: rgba(108, 99, 255, 0.4);
+  background: var(--border-hover);
   border-radius: var(--radius-full);
 }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 /* ── Selection ─────────────────────────────────────────────── */
 ::selection {
-  background: var(--accent-primary-soft);
-  color: var(--accent-primary);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 /* ── Typography ────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--text-primary);
+  color: var(--text-main);
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
-h5 { font-size: var(--text-lg); }
-h6 { font-size: var(--text-base); }
+h1 { font-size: 32px; letter-spacing: -0.02em; }
+h2 { font-size: 24px; letter-spacing: -0.01em; }
+h3 { font-size: 20px; }
+h4 { font-size: 16px; }
+h5 { font-size: 14px; }
+h6 { font-size: 12px; }
 
 p { color: var(--text-secondary); }
 
 a {
-  color: var(--text-link);
+  color: var(--primary);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-a:hover { color: var(--accent-secondary); }
+a:hover { color: var(--primary-hover); }
 
 img, video { max-width: 100%; display: block; }
 
@@ -70,7 +71,7 @@ ul, ol { list-style: none; }
 
 button, input, textarea, select {
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: 14px;
   outline: none;
   border: none;
   background: none;
@@ -90,15 +91,13 @@ button { cursor: pointer; }
   padding-top: var(--topbar-height);
   transition: margin-left var(--transition-base);
   min-height: 100vh;
-}
-
-.app-shell.sidebar-collapsed .main-content {
-  margin-left: var(--sidebar-width-collapsed);
+  width: calc(100% - var(--sidebar-width));
 }
 
 .page-wrapper {
   padding: var(--space-8);
   max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* ── Page Header ──────────────────────────────────────────── */
@@ -107,19 +106,12 @@ button { cursor: pointer; }
 }
 
 .page-header .page-title {
-  font-size: var(--text-3xl);
-  font-family: var(--font-display);
-  font-weight: 800;
-  background: var(--grad-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin-bottom: var(--space-2);
 }
 
 .page-header .page-subtitle {
   color: var(--text-muted);
-  font-size: var(--text-base);
+  font-size: 14px;
 }
 
 /* ── Grid Utilities ───────────────────────────────────────── */
@@ -127,13 +119,19 @@ button { cursor: pointer; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
 
-@media (max-width: 1100px) {
+/* Responsive adjustments */
+@media (max-width: 1024px) {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .page-wrapper { padding: var(--space-6); }
 }
-@media (max-width: 720px) {
+
+@media (max-width: 768px) {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  .main-content { margin-left: 0; }
+  .main-content { 
+    margin-left: 0;
+    width: 100%;
+  }
   .page-wrapper { padding: var(--space-4); }
 }
 
@@ -148,29 +146,11 @@ button { cursor: pointer; }
 .gap-4 { gap: var(--space-4); }
 .gap-6 { gap: var(--space-6); }
 
-/* ── Ambient Background Orbs ──────────────────────────────── */
-.bg-orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
-}
-.bg-orb-1 {
-  width: 600px; height: 600px;
-  background: var(--accent-primary);
-  top: -200px; left: -200px;
-}
-.bg-orb-2 {
-  width: 500px; height: 500px;
-  background: var(--accent-secondary);
-  bottom: -150px; right: -150px;
-}
-.bg-orb-3 {
-  width: 300px; height: 300px;
-  background: var(--success);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.03;
-}
+/* ── Helpers ──────────────────────────────────────────────── */
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.text-center { text-align: center; }

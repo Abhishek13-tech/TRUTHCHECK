@@ -1,155 +1,117 @@
 {% extends "base.html" %}
 {% block title %}Analysis History{% endblock %}
-{% block breadcrumb %}History{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
-{% endblock %}
 
 {% block content %}
 
-<div class="page-header animate-fade-up">
-  <h1 class="page-title">Analysis History</h1>
-  <p class="page-subtitle">View your previous content checks and their authenticity results.</p>
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+    <span>Saved Records</span>
+  </div>
+  <h1 class="hero-title">Analysis History</h1>
+  <p class="hero-desc">
+    Review your past image checks, OCR readings, and text authenticity analyses.
+  </p>
 </div>
 
-<!-- Controls -->
-<div class="history-controls animate-fade-up delay-100">
-  <div class="filter-chips">
-    <div class="filter-chip active">All</div>
-    <div class="filter-chip">
-      <i data-lucide="image" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>
-      Image
+<div class="modern-card">
+
+  <!-- Filter & Search Controls -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">
+      All Checks ({{ checks | length }})
     </div>
-    <div class="filter-chip">
-      <i data-lucide="file-text" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>
-      Text
-    </div>
-    <div class="filter-chip chip-real">Real</div>
-    <div class="filter-chip chip-fake">Fake</div>
-  </div>
 
-  <div class="history-search">
-    <svg class="search-icon" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="8"/>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" placeholder="Search history..." id="table-search">
-  </div>
-</div>
-
-<!-- Table -->
-<div class="history-table-wrapper animate-fade-up delay-200">
-  <table class="history-table">
-    <thead>
-      <tr>
-        <th><div class="th-inner">Type <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
-        <th>Content</th>
-        <th><div class="th-inner">Verdict <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
-        <th><div class="th-inner">Score <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
-        <th><div class="th-inner">Date <i data-lucide="chevron-down" class="sort-icon"></i></div></th>
-        <th style="text-align:right;">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-
-      <!-- Row 1 -->
-      <tr>
-        <td>
-          <span class="badge badge-image"><i data-lucide="image" style="width:10px;height:10px;margin-right:2px;"></i> Image</span>
-        </td>
-        <td>
-          <div class="flex items-center gap-3">
-            <div class="history-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-            <div class="history-text-preview" title="vaccine_news.jpg">vaccine_news.jpg</div>
-          </div>
-        </td>
-        <td><span class="badge badge-real">Real</span></td>
-        <td><strong style="color:var(--success);">94%</strong></td>
-        <td><span class="history-date">Today, 2:45 PM</span></td>
-        <td>
-          <div class="table-actions" style="justify-content: flex-end;">
-            <a href="#" class="table-action-btn" title="View Result">
-              <i data-lucide="eye"></i>
-            </a>
-            <button class="table-action-btn delete" title="Delete">
-              <i data-lucide="trash-2"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-
-      <!-- Row 2 -->
-      <tr>
-        <td>
-          <span class="badge badge-text"><i data-lucide="file-text" style="width:10px;height:10px;margin-right:2px;"></i> Text</span>
-        </td>
-        <td>
-          <div class="flex items-center gap-3">
-            <div class="history-text-preview" title="Breaking: Scientists discover cure for cancer...">
-              "Breaking: Scientists discover cure for cancer..."
-            </div>
-          </div>
-        </td>
-        <td><span class="badge badge-fake">Fake</span></td>
-        <td><strong style="color:var(--danger);">12%</strong></td>
-        <td><span class="history-date">Yesterday, 10:12 AM</span></td>
-        <td>
-          <div class="table-actions" style="justify-content: flex-end;">
-            <a href="#" class="table-action-btn" title="View Result">
-              <i data-lucide="eye"></i>
-            </a>
-            <button class="table-action-btn delete" title="Delete">
-              <i data-lucide="trash-2"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-
-      <!-- Row 3 -->
-      <tr>
-        <td>
-          <span class="badge badge-image"><i data-lucide="image" style="width:10px;height:10px;margin-right:2px;"></i> Image</span>
-        </td>
-        <td>
-          <div class="flex items-center gap-3">
-            <div class="history-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-            <div class="history-text-preview" title="election_photo.jpg">election_photo.jpg</div>
-          </div>
-        </td>
-        <td><span class="badge badge-pending">Uncertain</span></td>
-        <td><strong style="color:var(--warning);">55%</strong></td>
-        <td><span class="history-date">Sep 10, 4:20 PM</span></td>
-        <td>
-          <div class="table-actions" style="justify-content: flex-end;">
-            <a href="#" class="table-action-btn" title="View Result">
-              <i data-lucide="eye"></i>
-            </a>
-            <button class="table-action-btn delete" title="Delete">
-              <i data-lucide="trash-2"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-
-    </tbody>
-  </table>
-
-  <!-- Pagination -->
-  <div class="pagination">
-    <div class="pagination-info">Showing 1 to 4 of 24 entries</div>
-    <div class="pagination-buttons">
-      <button class="page-btn" disabled><i data-lucide="chevron-left"></i></button>
-      <button class="page-btn active">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn">3</button>
-      <button class="page-btn"><i data-lucide="chevron-right"></i></button>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <input
+        type="text"
+        id="history-search"
+        class="form-control"
+        placeholder="Filter history..."
+        style="width: 220px; padding: 0.45rem 0.75rem; font-size: 0.875rem;"
+        oninput="filterHistory()"
+      >
+      {% if checks %}
+        <form action="{{ url_for('clear_history') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear your check history?');">
+          <button type="submit" class="btn btn-outline" style="padding: 0.45rem 0.85rem; font-size: 0.85rem; color: var(--danger); border-color: var(--danger-border);">
+            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            Clear All
+          </button>
+        </form>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Table -->
+  {% if checks %}
+    <div style="overflow-x: auto;">
+      <table class="modern-table" id="history-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Content / File</th>
+            <th>Verdict</th>
+            <th>Trust Score</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in checks %}
+            <tr class="history-row">
+              <td>
+                <span class="tag-badge" style="background: var(--bg-secondary); color: var(--text-main);">
+                  <i data-lucide="{{ 'image' if check.check_type == 'image' else 'file-text' }}" style="width: 13px; height: 13px;"></i>
+                  {{ check.check_type | capitalize }}
+                </span>
+              </td>
+              <td class="content-cell" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;">
+                {% if check.image_filename %}
+                  <span title="{{ check.image_filename }}">{{ check.image_filename }}</span>
+                {% elif check.input_preview %}
+                  <span title="{{ check.input_preview }}">{{ check.input_preview }}</span>
+                {% else %}
+                  Submitted Media
+                {% endif %}
+              </td>
+              <td>
+                {% if 'authentic' in check.verdict.lower() or 'human' in check.verdict.lower() or 'real' in check.verdict.lower() %}
+                  <span class="tag-badge tag-real">
+                    <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% else %}
+                  <span class="tag-badge tag-fake">
+                    <i data-lucide="alert-triangle" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% endif %}
+              </td>
+              <td style="font-weight: 700; color: var(--text-main);">{{ check.score }}%</td>
+              <td style="color: var(--text-muted); font-size: 0.85rem;">{{ check.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem;">
+      <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--text-muted);">
+        <i data-lucide="clock" style="width: 26px; height: 26px;"></i>
+      </div>
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">No History Recorded</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">When you analyze images or text, your results will be logged here.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('image_check') }}" class="btn btn-primary" style="font-size: 0.875rem;">
+          <i data-lucide="image" style="width: 16px; height: 16px;"></i>
+          Check an Image
+        </a>
+        <a href="{{ url_for('text_check') }}" class="btn btn-secondary" style="font-size: 0.875rem;">
+          <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+          Check Text
+        </a>
+      </div>
+    </div>
+  {% endif %}
 
 </div>
 
@@ -157,12 +119,13 @@
 
 {% block extra_js %}
 <script>
-  // Simple filter logic for demo
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
+  function filterHistory() {
+    const input = document.getElementById('history-search').value.toLowerCase();
+    const rows = document.querySelectorAll('.history-row');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(input) ? '' : 'none';
     });
-  });
+  }
 </script>
 {% endblock %}
