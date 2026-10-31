@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Text Authenticity & AI Detection{% endblock %}
+
+{% block extra_css %}
+<!-- Tesseract.js for instant client-side OCR image text extraction -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag" style="background: var(--success-light); border-color: var(--success-border); color: #065F46;">
+    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+    <span>Natural Language AI Detector</span>
+  </div>
+  <h1 class="hero-title">Text Authenticity & AI Detection</h1>
+  <p class="hero-desc">
+    Paste written articles, captions, or extract text from document screenshots to detect ChatGPT, Claude, and human-written authenticity.
+  </p>
+</div>
+
+{% if error %}
+  <div class="alert alert-danger" style="max-width: 760px; margin: 0 auto 1.5rem;">
+    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
+    <span>{{ error }}</span>
+  </div>
+{% endif %}
+
+<div style="max-width: 760px; margin: 0 auto;">
+  <div class="modern-card">
+
+    <form action="{{ url_for('text_check_submit') }}" method="POST" enctype="multipart/form-data" id="text-form">
+      <input type="hidden" name="source_type" id="source-type" value="direct_text">
+
+      <!-- Simple Mode Switcher -->
+      <div style="display: flex; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 4px; margin-bottom: 1.5rem;">
+        <button type="button" class="auth-tab-btn active" id="btn-mode-direct" onclick="setMode('direct')" style="flex: 1;">
+          <i data-lucide="align-left" style="width: 15px; height: 15px;"></i>
+          Paste / Type Text
+        </button>
+        <button type="button" class="auth-tab-btn" id="btn-mode-ocr" onclick="setMode('ocr')" style="flex: 1;">
+          <i data-lucide="scan" style="width: 15px; height: 15px;"></i>
+          Extract Text from Image (OCR)
+        </button>
+      </div>
+
+      <!-- OCR Image Upload Section (Hidden until OCR mode active) -->
+      <div id="ocr-box" style="display: none; margin-bottom: 1.5rem;">
+        <div class="dropzone" onclick="document.getElementById('ocr-file-input').click()" style="padding: 1.75rem 1rem;">
+          <input type="file" id="ocr-file-input" name="ocr_image" accept="image/*" style="display: none;">
+          <div class="dropzone-icon" style="width: 44px; height: 44px; margin-bottom: 0.5rem;">
+            <i data-lucide="upload-cloud" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Upload screenshot or photo to extract text</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Text will be recognized automatically via OCR</div>
+        </div>
+
+        <div id="ocr-loading" style="display: none; margin-top: 1rem;" class="alert alert-info">
+          <i data-lucide="loader-2" style="width: 18px; height: 18px; animation: spin 1s linear infinite;"></i>
+          <span id="ocr-status-msg">Extracting text from image...</span>
+        </div>
+      </div>
+
+      <!-- Text Area Input -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <label class="form-label" for="text-content" style="margin-bottom: 0;">Content to Analyze</label>
+          <span id="word-count" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">0 words</span>
+        </div>
+        <textarea
+          id="text-content"
+          name="text"
+          rows="7"
+          class="form-control"
+          placeholder="Paste news articles, captions, essays, or statements here..."
+          required
+          style="resize: vertical; line-height: 1.6;"
+        ></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div>
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn" style="background: var(--success); border-color: var(--success);">
+          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+          Analyze Text Authenticity
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+  <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+    💡 Tip: For highest accuracy, provide at least 25 words of text.
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const textArea = document.getElementById('text-content');
+  const wordCount = document.getElementById('word-count');
+  const ocrFileInput = document.getElementById('ocr-file-input');
+  const ocrLoading = document.getElementById('ocr-loading');
+  const ocrStatusMsg = document.getElementById('ocr-status-msg');
+  const sourceTypeInput = document.getElementById('source-type');
+
+  // Word count tracker
+  textArea.addEventListener('input', () => {
+    const text = textArea.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    wordCount.textContent = `${words} words`;
+  });
+
+  function setMode(mode) {
+    const btnDirect = document.getElementById('btn-mode-direct');
+    const btnOcr = document.getElementById('btn-mode-ocr');
+    const ocrBox = document.getElementById('ocr-box');
+
+    if (mode === 'direct') {
+      btnDirect.classList.add('active');
+      btnOcr.classList.remove('active');
+      ocrBox.style.display = 'none';
+      sourceTypeInput.value = 'direct_text';
+    } else {
+      btnOcr.classList.add('active');
+      btnDirect.classList.remove('active');
+      ocrBox.style.display = 'block';
+      sourceTypeInput.value = 'image_ocr';
+    }
+  }
+
+  // Tesseract OCR handling
+  ocrFileInput.addEventListener('change', async () => {
+    if (!ocrFileInput.files || ocrFileInput.files.length === 0) return;
+    const file = ocrFileInput.files[0];
+
+    ocrLoading.style.display = 'flex';
+    ocrStatusMsg.textContent = 'Scanning image and reading text with OCR...';
+    lucide.createIcons();
+
+    try {
+      const result = await Tesseract.recognize(file, 'eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            ocrStatusMsg.textContent = `Extracting text... ${Math.round(m.progress * 100)}%`;
+          }
+        }
+      });
+      
+      const extracted = result.data.text.trim();
+      if (extracted) {
+        textArea.value = extracted;
+        const words = extracted.split(/\s+/).length;
+        wordCount.textContent = `${words} words`;
+        ocrLoading.className = 'alert alert-success';
+        ocrStatusMsg.textContent = `Text extracted successfully! (${words} words found)`;
+      } else {
+        ocrLoading.className = 'alert alert-danger';
+        ocrStatusMsg.textContent = 'Could not find clear text in the image. Please try another image.';
+      }
+    } catch (err) {
+      ocrLoading.className = 'alert alert-danger';
+      ocrStatusMsg.textContent = 'OCR processing failed. You can paste the text manually.';
+    }
+  });
+</script>
+{% endblock %}

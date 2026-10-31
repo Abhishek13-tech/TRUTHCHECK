@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+    <span>Account Settings</span>
+  </div>
+  <h1 class="hero-title">User Profile</h1>
+  <p class="hero-desc">Manage your credentials, authentication provider, and view your account details.</p>
+</div>
+
+<div style="max-width: 650px; margin: 0 auto;">
+  <div class="modern-card">
+
+    <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle);">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 700; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+        {{ current_user.get_display_name()[0] | upper }}
+      </div>
+      <div>
+        <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">
+          {{ current_user.get_display_name() }}
+        </h2>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span class="tag-badge" style="background: var(--primary-light); color: var(--primary);">
+            <i data-lucide="{{ 'mail' if current_user.auth_method == 'email' else ('phone' if current_user.auth_method == 'phone' else 'globe') }}" style="width: 12px; height: 12px;"></i>
+            Signed in via {{ current_user.auth_method | capitalize }}
+          </span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Member since {{ current_user.created_at.strftime('%B %Y') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" value="{{ current_user.get_display_name() }}" readonly style="background: var(--bg-secondary);">
+      </div>
+
+      {% if current_user.email %}
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Email / Gmail Address</label>
+          <input type="text" class="form-control" value="{{ current_user.email }}" readonly style="background: var(--bg-secondary);">
+        </div>
+      {% endif %}
+
+      {% if current_user.phone %}
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Phone Number</label>
+          <input type="text" class="form-control" value="{{ current_user.phone }}" readonly style="background: var(--bg-secondary);">
+        </div>
+      {% endif %}
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Account Security</label>
+        <div style="padding: 0.85rem 1rem; background: var(--success-light); border: 1px solid var(--success-border); border-radius: var(--radius-md); display: flex; align-items: center; gap: 0.6rem; color: #065F46; font-size: 0.9rem; font-weight: 500;">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+          <span>Account authenticated and active. Protected with session-based security.</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+        <a href="{{ url_for('logout') }}" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger-border); flex: 1;">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          Sign Out of Account
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Change Password Card (For Email/Password users) -->
+  {% if current_user.password_hash %}
+    <div class="modern-card" style="margin-top: 1.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="lock" style="width: 18px; height: 18px; color: var(--primary);"></i>
+        Change Password
+      </h3>
+
+      <form action="{{ url_for('change_password') }}" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="current_password">Current Password</label>
+          <input type="password" id="current_password" name="current_password" class="form-control" placeholder="Enter your current password" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="new_password">New Password</label>
+          <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">Confirm New Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter new password" minlength="6" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+          Update Password
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,151 @@
+/* ============================================================
+   TRUTHCHECK — Keyframe Animations
+   ============================================================ */
+
+/* ── Fade In ───────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Scale ─────────────────────────────────────────────────── */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scalePulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
+
+/* ── Glow Pulse ────────────────────────────────────────────── */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-primary-glow); }
+  50%       { box-shadow: 0 0 40px var(--accent-primary-glow), 0 0 60px rgba(108,99,255,0.15); }
+}
+
+@keyframes glowPulseCyan {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-secondary-glow); }
+  50%       { box-shadow: 0 0 40px var(--accent-secondary-glow); }
+}
+
+@keyframes glowSuccess {
+  0%, 100% { box-shadow: 0 0 20px var(--success-glow); }
+  50%       { box-shadow: 0 0 40px var(--success-glow); }
+}
+
+@keyframes glowDanger {
+  0%, 100% { box-shadow: 0 0 20px var(--danger-glow); }
+  50%       { box-shadow: 0 0 40px var(--danger-glow); }
+}
+
+/* ── Spin ──────────────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+/* ── Shimmer (skeleton loading) ────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ── Gradient Shift ────────────────────────────────────────── */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── Dash Rotate (upload border) ──────────────────────────── */
+@keyframes dashRotate {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -200; }
+}
+
+/* ── Counter ───────────────────────────────────────────────── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Float ─────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ── SVG Ring Fill ─────────────────────────────────────────── */
+@keyframes ringFill {
+  from { stroke-dashoffset: 283; }
+}
+
+/* ── Bounce In ─────────────────────────────────────────────── */
+@keyframes bounceIn {
+  0%   { opacity: 0; transform: scale(0.3); }
+  50%  { opacity: 1; transform: scale(1.05); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ── Toast Slide ───────────────────────────────────────────── */
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(100px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100px); }
+}
+
+/* ── Typing Dots ───────────────────────────────────────────── */
+@keyframes typingDot {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40%            { transform: scale(1); opacity: 1; }
+}
+
+/* ── Stagger Animation Utility Classes ─────────────────────── */
+.animate-fade-up    { animation: fadeInUp 0.5s ease both; }
+.animate-fade-in    { animation: fadeIn 0.4s ease both; }
+.animate-scale-in   { animation: scaleIn 0.4s ease both; }
+.animate-fade-left  { animation: fadeInLeft 0.5s ease both; }
+.animate-fade-right { animation: fadeInRight 0.5s ease both; }
+.animate-bounce-in  { animation: bounceIn 0.6s ease both; }
+
+.delay-100  { animation-delay: 100ms; }
+.delay-150  { animation-delay: 150ms; }
+.delay-200  { animation-delay: 200ms; }
+.delay-300  { animation-delay: 300ms; }
+.delay-400  { animation-delay: 400ms; }
+.delay-500  { animation-delay: 500ms; }
+.delay-600  { animation-delay: 600ms; }
+.delay-700  { animation-delay: 700ms; }
+.delay-800  { animation-delay: 800ms; }

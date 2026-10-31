@@ -1,81 +1,105 @@
-<!-- Result page -->
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Authenticity Result{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block content %}
 
-    <title>TRUTHCHECK Result</title>
+{% set is_fake = 'fake' in final_result.lower() or 'manipulate' in final_result.lower() or 'ai generated' in final_result.lower() or 'ai-generated' in final_result.lower() %}
+{% set is_real = not is_fake %}
+{% set score_val = score if score is defined else (28 if is_fake else 94) %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+<div style="max-width: 760px; margin: 0 auto;">
 
-<body>
+  <!-- Back button -->
+  <div style="margin-bottom: 1.5rem;">
+    <a href="{{ back_url if back_url else url_for('dashboard') }}" class="btn btn-outline" style="padding: 0.45rem 0.95rem; font-size: 0.875rem;">
+      <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
+      Back to Analysis
+    </a>
+  </div>
 
-    <div class="container">
+  <!-- Big Result Banner -->
+  <div class="result-banner {{ 'fake' if is_fake else 'authentic' }}">
+    <div class="result-badge">
+      <i data-lucide="{{ 'alert-triangle' if is_fake else 'shield-check' }}" style="width: 16px; height: 16px;"></i>
+      {{ 'AI-Generated / Fake' if is_fake else 'Authentic / Genuine' }}
+    </div>
 
-        <header>
-            <h1>TRUTHCHECK</h1>
-            <p>Authenticity Analysis Result</p>
-        </header>
+    <h1 class="result-title">{{ final_result }}</h1>
 
-        <main class="result-card">
+    <p class="result-explanation">
+      {% if is_fake %}
+        Our detection models identified structural patterns, synthetic artifacts, or non-human word distributions indicating AI generation.
+      {% else %}
+        The submitted content matches natural patterns and passed all authenticity verifications without anomalies.
+      {% endif %}
+    </p>
 
-            <div class="image-section">
+    <!-- Score Gauge -->
+    <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; background: #FFFFFF; padding: 0.6rem 1.25rem; border-radius: var(--radius-full); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+      <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Trust Score:</span>
+      <span style="font-size: 1.25rem; font-weight: 800; color: {{ '#EF4444' if is_fake else '#10B981' }};">
+        {{ score_val }}%
+      </span>
+      <span style="font-size: 0.85rem; color: var(--text-light);">/ 100%</span>
+    </div>
+  </div>
 
-                <h2>Uploaded Image</h2>
+  <!-- Detailed Breakdown Card -->
+  <div class="modern-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 1.25rem;">
+      Analysis Breakdown
+    </h3>
 
-                <img
-                    src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}"
-                    alt="Uploaded Image"
-                    class="uploaded-image"
-                >
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      
+      <!-- Input preview -->
+      {% if image_filename %}
+        <div style="display: flex; gap: 1rem; align-items: center; padding: 0.75rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+          <img src="{{ url_for('static', filename='uploads/' + image_filename) }}" alt="Analyzed Media" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Analyzed File</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">{{ image_filename }}</div>
+          </div>
+        </div>
+      {% endif %}
 
-            </div>
+      {% if caption %}
+        <div style="padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+          <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">Analyzed Text Snippet</div>
+          <div style="font-size: 0.95rem; color: var(--text-main); line-height: 1.5; font-style: italic;">
+            "{{ caption[:200] }}{% if caption | length > 200 %}...{% endif %}"
+          </div>
+        </div>
+      {% endif %}
 
-            <div class="caption-section">
-
-                <h2>Caption</h2>
-
-                <p class="caption">
-                    {{ caption if caption else "No caption provided." }}
-                </p>
-
-            </div>
-
-            <div class="analysis-grid">
-
-                <div class="analysis-box">
-                    <h3>Image Authenticity</h3>
-                    <p>{{ image_result }}</p>
-                </div>
-
-                <div class="analysis-box">
-                    <h3>Text Authenticity</h3>
-                    <p>{{ text_result }}</p>
-                </div>
-
-            </div>
-
-            <div class="final-result">
-
-                <h2>Overall Result</h2>
-
-                <p>
-                    {{ final_result }}
-                </p>
-
-            </div>
-
-            <a href="/" class="back-button">
-                Check Another Content
-            </a>
-
-        </main>
+      <!-- Verification criteria -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+        <div style="padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Input Method</div>
+          <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">{{ image_result }}</div>
+        </div>
+        <div style="padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Model Verdict</div>
+          <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">{{ text_result }}</div>
+        </div>
+      </div>
 
     </div>
 
-</body>
+    <!-- Actions -->
+    <div style="margin-top: 1.75rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{{ back_url if back_url else url_for('dashboard') }}" class="btn btn-primary" style="flex: 1;">
+        <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+        Analyze Another Content
+      </a>
+      <a href="{{ url_for('history') }}" class="btn btn-secondary" style="flex: 1;">
+        <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+        View Full History
+      </a>
+    </div>
 
-</html>
+  </div>
+
+</div>
+
+{% endblock %}

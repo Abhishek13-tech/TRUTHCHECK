@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
+    <span>Preferences</span>
+  </div>
+  <h1 class="hero-title">Platform Settings</h1>
+  <p class="hero-desc">Configure your analysis preferences and notifications.</p>
+</div>
+
+<div style="max-width: 650px; margin: 0 auto;">
+  <div class="modern-card">
+
+    <div class="form-group" style="padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle);">
+      <label class="form-label">Auto-save Analysis Results</label>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Automatically save your verified images and text in your History tab</span>
+        <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+      </div>
+    </div>
+
+    <div class="form-group" style="padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); margin-top: 1.25rem;">
+      <label class="form-label">Detection Sensitivity</label>
+      <select class="form-control" style="margin-top: 0.5rem;">
+        <option selected>Balanced (Standard threshold: 50%)</option>
+        <option>Strict (Flag even minor AI artifacts: 70%)</option>
+        <option>Relaxed (Only flag high confidence deepfakes: 30%)</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <button type="button" class="btn btn-primary" onclick="alert('Settings saved successfully!');">
+        <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+        Save Preferences
+      </button>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}About TRUTHCHECK{% endblock %}
+
+{% block content %}
+
+<div class="hero-simple">
+  <div class="hero-tag">
+    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+    <span>About the Platform</span>
+  </div>
+  <h1 class="hero-title">Empowering Truth with <span class="highlight">AI Intelligence</span></h1>
+  <p class="hero-desc">
+    TRUTHCHECK combines multi-modal neural networks and natural language heuristics to combat misinformation, deepfakes, and synthetic media.
+  </p>
+</div>
+
+<div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+  
+  <div class="modern-card">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.75rem;">
+      Our Mission
+    </h3>
+    <p style="color: var(--text-body); line-height: 1.6; margin-bottom: 1rem;">
+      In an era where synthetic media and generative AI content are generated in seconds, verifying authenticity has become crucial. TRUTHCHECK delivers instant, accessible detection tools for journalists, researchers, students, and citizens.
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+      <div style="padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+        <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">Visual Deepfake Check</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">Detects pixel artifacts, face manipulation, and synthetic diffusion signatures.</div>
+      </div>
+      <div style="padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+        <div style="font-weight: 700; color: var(--success); margin-bottom: 0.25rem;">Text Perplexity & OCR</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">Evaluates burstiness, token distribution, and extracts text directly from images.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modern-card" style="text-align: center; padding: 2rem;">
+    <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">Ready to verify your content?</h4>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">Choose an analysis tool to get started immediately.</p>
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+      <a href="{{ url_for('image_check') }}" class="btn btn-primary" style="font-size: 0.875rem;">
+        <i data-lucide="image" style="width: 16px; height: 16px;"></i> Check Image
+      </a>
+      <a href="{{ url_for('text_check') }}" class="btn btn-secondary" style="font-size: 0.875rem;">
+        <i data-lucide="file-text" style="width: 16px; height: 16px;"></i> Check Text
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

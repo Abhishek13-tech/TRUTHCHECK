@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Analysis History{% endblock %}
+
+{% block content %}
+
+<div class="hero-simple" style="margin-bottom: 2rem;">
+  <div class="hero-tag">
+    <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+    <span>Saved Records</span>
+  </div>
+  <h1 class="hero-title">Analysis History</h1>
+  <p class="hero-desc">
+    Review your past image checks, OCR readings, and text authenticity analyses.
+  </p>
+</div>
+
+<div class="modern-card">
+
+  <!-- Filter & Search Controls -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">
+      All Checks ({{ checks | length }})
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <input
+        type="text"
+        id="history-search"
+        class="form-control"
+        placeholder="Filter history..."
+        style="width: 220px; padding: 0.45rem 0.75rem; font-size: 0.875rem;"
+        oninput="filterHistory()"
+      >
+      {% if checks %}
+        <form action="{{ url_for('clear_history') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear your check history?');">
+          <button type="submit" class="btn btn-outline" style="padding: 0.45rem 0.85rem; font-size: 0.85rem; color: var(--danger); border-color: var(--danger-border);">
+            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            Clear All
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Table -->
+  {% if checks %}
+    <div style="overflow-x: auto;">
+      <table class="modern-table" id="history-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Content / File</th>
+            <th>Verdict</th>
+            <th>Trust Score</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in checks %}
+            <tr class="history-row">
+              <td>
+                <span class="tag-badge" style="background: var(--bg-secondary); color: var(--text-main);">
+                  <i data-lucide="{{ 'image' if check.check_type == 'image' else 'file-text' }}" style="width: 13px; height: 13px;"></i>
+                  {{ check.check_type | capitalize }}
+                </span>
+              </td>
+              <td class="content-cell" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;">
+                {% if check.image_filename %}
+                  <span title="{{ check.image_filename }}">{{ check.image_filename }}</span>
+                {% elif check.input_preview %}
+                  <span title="{{ check.input_preview }}">{{ check.input_preview }}</span>
+                {% else %}
+                  Submitted Media
+                {% endif %}
+              </td>
+              <td>
+                {% if 'authentic' in check.verdict.lower() or 'human' in check.verdict.lower() or 'real' in check.verdict.lower() %}
+                  <span class="tag-badge tag-real">
+                    <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% else %}
+                  <span class="tag-badge tag-fake">
+                    <i data-lucide="alert-triangle" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% endif %}
+              </td>
+              <td style="font-weight: 700; color: var(--text-main);">{{ check.score }}%</td>
+              <td style="color: var(--text-muted); font-size: 0.85rem;">{{ check.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem;">
+      <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--text-muted);">
+        <i data-lucide="clock" style="width: 26px; height: 26px;"></i>
+      </div>
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">No History Recorded</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">When you analyze images or text, your results will be logged here.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('image_check') }}" class="btn btn-primary" style="font-size: 0.875rem;">
+          <i data-lucide="image" style="width: 16px; height: 16px;"></i>
+          Check an Image
+        </a>
+        <a href="{{ url_for('text_check') }}" class="btn btn-secondary" style="font-size: 0.875rem;">
+          <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+          Check Text
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function filterHistory() {
+    const input = document.getElementById('history-search').value.toLowerCase();
+    const rows = document.querySelectorAll('.history-row');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(input) ? '' : 'none';
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+/* ============================================================
+   TRUTHCHECK — Design Tokens
+   Central source of truth for all design variables
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ── Background Colors (Dark Mode Default) ──────────────── */
+  --bg-primary:       #07090D;
+  --bg-sidebar:       #0B0E13;
+  --bg-card:          #11161E;
+  --bg-card-hover:    #151B24;
+  /* Enhanced glassmorphism with subtle translucency */
+  --bg-glass:         rgba(255, 255, 255, 0.07);
+  --bg-glass-hover:   rgba(255, 255, 255, 0.12);
+  /* Gradient primary for headings and accents */
+  --grad-primary:    linear-gradient(135deg, var(--primary), var(--secondary));
+
+  /* ── Border Colors ──────────────────────────────────────── */
+  --border:           #222A35;
+  --border-hover:     #323C4A;
+  --border-glass:     rgba(255, 255, 255, 0.05);
+
+  /* ── Accent Colors ──────────────────────────────────────── */
+  --primary:          #7C5CFF;
+  --primary-hover:    #6D4EEA;
+  --primary-soft:     rgba(124, 92, 255, 0.15);
+  --secondary:        #4FD1FF;
+  --secondary-soft:   rgba(79, 209, 255, 0.15);
+
+  /* ── Status Colors ──────────────────────────────────────── */
+  --success:          #22C55E;
+  --success-soft:     rgba(34, 197, 94, 0.15);
+  --warning:          #F59E0B;
+  --warning-soft:     rgba(245, 158, 11, 0.15);
+  --danger:           #EF4444;
+  --danger-soft:      rgba(239, 68, 68, 0.15);
+
+  /* ── Text Colors ────────────────────────────────────────── */
+  --text-main:        #F5F7FA;
+  --text-secondary:   #A6AFBD;
+  --text-muted:       #6F7A8B;
+  --text-inverted:    #ffffff;
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-body:        'Inter', system-ui, -apple-system, sans-serif;
+  --font-display:     'Inter', system-ui, -apple-system, sans-serif;
+
+  /* ── Spacing ────────────────────────────────────────────── */
+  --space-1:          4px;
+  --space-2:          8px;
+  --space-3:          12px;
+  --space-4:          16px;
+  --space-5:          20px;
+  --space-6:          24px;
+  --space-8:          32px;
+  --space-10:         40px;
+  --space-12:         48px;
+  --space-16:         64px;
+
+  /* ── Border Radius ──────────────────────────────────────── */
+  --radius-sm:        8px;
+  --radius-md:        12px;
+  --radius-lg:        16px;
+  --radius-full:      9999px;
+
+  /* ── Shadows (Minimal) ──────────────────────────────────── */
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:        0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg:        0 12px 24px rgba(0,0,0,0.4);
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --sidebar-width:    240px;
+  --topbar-height:    64px;
+
+  /* ── Transitions ────────────────────────────────────────── */
+  --transition-fast:  150ms ease;
+  --transition-base:  200ms ease;
+  --transition-slow:  300ms ease;
+
+  /* ── Z-Index ────────────────────────────────────────────── */
+  --z-sidebar:        100;
+  --z-topbar:         90;
+  --z-modal:          200;
+  --z-toast:          300;
+}
+
+/* ── Light Mode Override ──────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary:       #F8F9FB;
+  --bg-sidebar:       #FFFFFF;
+  --bg-card:          #FFFFFF;
+  --bg-card-hover:    #F3F4F6;
+  --bg-glass:         rgba(255, 255, 255, 0.07);
+  --bg-glass-hover:   rgba(255, 255, 255, 0.12);
+  --grad-primary:    linear-gradient(135deg, var(--primary), var(--secondary));
+
+  --border:           #E5E7EB;
+  --border-hover:     #D1D5DB;
+  --border-glass:     rgba(0, 0, 0, 0.05);
+
+  --text-main:        #111827;
+  --text-secondary:   #4B5563;
+  --text-muted:       #9CA3AF;
+  
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:        0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg:        0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — TRUTHCHECK</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-simple.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    /* ── Step indicator ─────────────────────────────── */
+    .step-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 1.75rem;
+    }
+    .step-node {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+      border: 2px solid var(--border, #334155);
+      background: transparent;
+      color: var(--text-muted, #94a3b8);
+      transition: all 0.3s;
+      position: relative; z-index: 1;
+      flex-shrink: 0;
+    }
+    .step-node.active {
+      border-color: var(--primary, #6366f1);
+      background: var(--primary, #6366f1);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.2);
+    }
+    .step-node.done {
+      border-color: #22c55e;
+      background: #22c55e;
+      color: #fff;
+    }
+    .step-connector {
+      flex: 1; max-width: 56px; height: 2px;
+      background: var(--border, #334155);
+      transition: background 0.4s;
+    }
+    .step-connector.done { background: #22c55e; }
+
+    /* ── OTP digits ─────────────────────────────────── */
+    .otp-row {
+      display: flex; gap: 10px; justify-content: center; margin: 0.5rem 0 1rem;
+    }
+    .otp-digit {
+      width: 48px; height: 56px;
+      text-align: center; font-size: 1.5rem; font-weight: 700;
+      border: 2px solid var(--border, #334155);
+      border-radius: 10px;
+      background: var(--input-bg, #1e293b);
+      color: var(--text, #e2e8f0);
+      caret-color: var(--primary, #6366f1);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .otp-digit:focus {
+      border-color: var(--primary, #6366f1);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+    }
+    .otp-digit.filled { border-color: var(--primary, #6366f1); }
+
+    /* ── Field section shown/hidden ─────────────────── */
+    .step-section { display: none; }
+    .step-section.active { display: block; }
+
+    /* ── Status messages ────────────────────────────── */
+    .step-msg {
+      font-size: 0.85rem; margin: 0.5rem 0 0;
+      min-height: 1.2em; text-align: center;
+    }
+    .step-msg.success { color: #22c55e; }
+    .step-msg.error   { color: #f87171; }
+    .step-msg.info    { color: #94a3b8; }
+
+    /* ── Resend timer ───────────────────────────────── */
+    #resend-area { text-align: center; margin-top: 0.75rem; font-size: 0.85rem; }
+    #resend-btn  {
+      background: none; border: none; cursor: pointer;
+      color: var(--primary, #6366f1); font-weight: 600; font-size: 0.85rem;
+      text-decoration: underline;
+    }
+    #resend-btn:disabled { color: var(--text-muted, #94a3b8); cursor: default; text-decoration: none; }
+
+    /* ── Verified badge next to email ───────────────── */
+    .email-verified-row {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(34,197,94,.08);
+      border: 1px solid rgba(34,197,94,.3);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 0.9rem; color: #22c55e; margin-bottom: 1rem;
+    }
+    .email-verified-row span { flex: 1; color: var(--text, #e2e8f0); font-size: 0.85rem; }
+
+    .btn-sm {
+      padding: 0.45rem 1rem; font-size: 0.82rem; border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-box">
+
+      <div class="auth-header">
+        <div class="auth-brand-logo">
+          <i data-lucide="user-plus" style="width: 24px; height: 24px;"></i>
+        </div>
+        <h1 class="auth-title">Create an Account</h1>
+        <p class="auth-subtitle">Get started with AI-powered authenticity detection</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
+              <i data-lucide="{{ 'alert-circle' if category == 'error' else 'check-circle' }}" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% if error %}
+        <div class="alert alert-danger" id="server-error">
+          <i data-lucide="alert-circle" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+          <span>{{ error }}</span>
+        </div>
+      {% endif %}
+
+      <!-- ── Google Sign Up ───────────────────────────── -->
+      <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 0.5rem; min-height: 44px;">
+        <div id="g_id_onload"
+             data-client_id="{{ google_client_id }}"
+             data-context="signup"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signup_with"
+             data-size="large"
+             data-logo_alignment="left"
+             data-width="390">
+        </div>
+      </div>
+
+      <div class="auth-divider">
+        <span>OR REGISTER WITH EMAIL</span>
+      </div>
+
+      <!-- ══════════════════════════════════════════════ -->
+      <!-- STEP INDICATOR                                  -->
+      <!-- ══════════════════════════════════════════════ -->
+      <div class="step-bar" id="step-bar">
+        <div class="step-node active" id="node-1">1</div>
+        <div class="step-connector" id="conn-1"></div>
+        <div class="step-node" id="node-2">2</div>
+        <div class="step-connector" id="conn-2"></div>
+        <div class="step-node" id="node-3">3</div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════ -->
+      <!-- STEP 1 · Enter Email                           -->
+      <!-- ══════════════════════════════════════════════ -->
+      <div class="step-section active" id="step-1">
+        <div class="form-group">
+          <label class="form-label" for="email-input">Email Address</label>
+          <input type="email" id="email-input" class="form-control"
+                 placeholder="alex@gmail.com" autocomplete="email">
+        </div>
+        <p class="step-msg info" id="msg-1">We'll send a 6-digit code to verify your email.</p>
+
+        <button type="button" class="btn btn-primary btn-full" id="send-otp-btn" onclick="sendOTP()">
+          <i data-lucide="send" style="width: 17px; height: 17px;"></i>
+          Send Verification Code
+        </button>
+      </div>
+
+      <!-- ══════════════════════════════════════════════ -->
+      <!-- STEP 2 · Enter OTP                             -->
+      <!-- ══════════════════════════════════════════════ -->
+      <div class="step-section" id="step-2">
+        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem; text-align:center;">
+          Enter the 6-digit code sent to <strong id="otp-email-display" style="color:var(--text)"></strong>
+        </p>
+
+        <div class="otp-row" id="otp-row">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d0">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d1">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d2">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d3">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d4">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d5">
+        </div>
+
+        <p class="step-msg" id="msg-2"></p>
+
+        <button type="button" class="btn btn-primary btn-full" id="verify-otp-btn" onclick="verifyOTP()">
+          <i data-lucide="shield-check" style="width: 17px; height: 17px;"></i>
+          Verify Code
+        </button>
+
+        <div id="resend-area">
+          <button id="resend-btn" disabled onclick="resendOTP()">Resend code</button>
+          <span id="resend-timer" style="color:var(--text-muted)"></span>
+        </div>
+
+        <button type="button" class="btn" id="back-to-1-btn"
+                style="width:100%; margin-top:0.75rem; background:transparent; border:1px solid var(--border); color:var(--text-muted); font-size:0.85rem;"
+                onclick="goStep(1)">
+          ← Change email
+        </button>
+      </div>
+
+      <!-- ══════════════════════════════════════════════ -->
+      <!-- STEP 3 · Profile & Password                    -->
+      <!-- ══════════════════════════════════════════════ -->
+      <div class="step-section" id="step-3">
+        <!-- Verified badge -->
+        <div class="email-verified-row">
+          <i data-lucide="check-circle-2" style="width:18px;height:18px;flex-shrink:0;"></i>
+          <span id="verified-badge-email"></span>
+          <span style="color:#22c55e;font-weight:600;font-size:0.8rem;">Verified ✓</span>
+        </div>
+
+        <form action="{{ url_for('register') }}" method="POST" id="register-form">
+          <!-- Hidden field carries the verified email to the server -->
+          <input type="hidden" name="email" id="form-email">
+
+          <div class="form-group">
+            <label class="form-label" for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" class="form-control"
+                   placeholder="Alex Morgan" required autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div style="position: relative;">
+              <input type="password" id="password" name="password" class="form-control"
+                     placeholder="Create a secure password" minlength="6" required
+                     autocomplete="new-password" style="padding-right: 40px;">
+              <button type="button" onclick="togglePasswordVisibility('password', 'eye-reg-1')"
+                      style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+                             background: none; border: none; cursor: pointer; color: var(--text-muted);
+                             display: flex; align-items: center; padding: 4px;">
+                <i data-lucide="eye" id="eye-reg-1" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
+            <p class="form-hint">At least 6 characters</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirm_password">Confirm Password</label>
+            <div style="position: relative;">
+              <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                     placeholder="Confirm your password" minlength="6" required
+                     autocomplete="new-password" style="padding-right: 40px;">
+              <button type="button" onclick="togglePasswordVisibility('confirm_password', 'eye-reg-2')"
+                      style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+                             background: none; border: none; cursor: pointer; color: var(--text-muted);
+                             display: flex; align-items: center; padding: 4px;">
+                <i data-lucide="eye" id="eye-reg-2" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <p class="step-msg" id="msg-3"></p>
+
+          <button type="submit" class="btn btn-primary btn-full" id="create-btn">
+            <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+            Create Account
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Sign in link ─────────────────────────────── -->
+      <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-muted);">
+        Already have an account?
+        <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Sign in here →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    /* ── State ──────────────────────────────────────── */
+    let currentStep = 1;
+    let verifiedEmail = '';
+    let resendInterval = null;
+
+    /* ── Step navigation ────────────────────────────── */
+    function goStep(n) {
+      document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+      currentStep = n;
+      updateStepBar(n);
+      lucide.createIcons();
+    }
+
+    function updateStepBar(active) {
+      const nodes = [1, 2, 3];
+      nodes.forEach(i => {
+        const node = document.getElementById('node-' + i);
+        node.classList.remove('active', 'done');
+        if (i < active)       node.classList.add('done'), node.innerHTML = '✓';
+        else if (i === active) node.classList.add('active'), node.innerHTML = i;
+        else                   node.innerHTML = i;
+      });
+      // connectors
+      [1, 2].forEach(i => {
+        const conn = document.getElementById('conn-' + i);
+        conn.classList.toggle('done', i < active);
+      });
+    }
+
+    /* ── STEP 1 · Send OTP ──────────────────────────── */
+    async function sendOTP() {
+      const email = document.getElementById('email-input').value.trim();
+      const msg   = document.getElementById('msg-1');
+      const btn   = document.getElementById('send-otp-btn');
+
+      if (!email || !email.includes('@')) {
+        setMsg(msg, 'Please enter a valid email address.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader-2" style="width:17px;height:17px;animation:spin 1s linear infinite;"></i> Sending…';
+      lucide.createIcons();
+      setMsg(msg, '', 'info');
+
+      try {
+        const res  = await fetch('/auth/register/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          verifiedEmail = email;
+          document.getElementById('otp-email-display').textContent = email;
+          goStep(2);
+          startResendTimer(60);
+        } else {
+          setMsg(msg, data.message || 'Failed to send OTP.', 'error');
+        }
+      } catch (e) {
+        setMsg(msg, 'Could not connect. Please try again.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="send" style="width:17px;height:17px;"></i> Send Verification Code';
+      lucide.createIcons();
+    }
+
+    /* ── STEP 2 · Verify OTP ────────────────────────── */
+    async function verifyOTP() {
+      const digits = Array.from({ length: 6 }, (_, i) =>
+        document.getElementById('d' + i).value.trim()
+      );
+      const otp  = digits.join('');
+      const msg  = document.getElementById('msg-2');
+      const btn  = document.getElementById('verify-otp-btn');
+
+      if (otp.length < 6 || !/^\d{6}$/.test(otp)) {
+        setMsg(msg, 'Please enter the complete 6-digit code.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader-2" style="width:17px;height:17px;animation:spin 1s linear infinite;"></i> Verifying…';
+      lucide.createIcons();
+
+      try {
+        const res  = await fetch('/auth/register/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: verifiedEmail, otp })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          clearResendTimer();
+          document.getElementById('verified-badge-email').textContent = verifiedEmail;
+          document.getElementById('form-email').value = verifiedEmail;
+          setMsg(msg, '✓ ' + data.message, 'success');
+          setTimeout(() => goStep(3), 600);
+        } else {
+          setMsg(msg, data.message || 'Invalid OTP.', 'error');
+        }
+      } catch (e) {
+        setMsg(msg, 'Could not connect. Please try again.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="shield-check" style="width:17px;height:17px;"></i> Verify Code';
+      lucide.createIcons();
+    }
+
+    /* ── Resend OTP ─────────────────────────────────── */
+    async function resendOTP() {
+      const email = verifiedEmail;
+      if (!email) return;
+
+      const btn = document.getElementById('resend-btn');
+      btn.disabled = true;
+
+      try {
+        const res  = await fetch('/auth/register/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        const msg  = document.getElementById('msg-2');
+
+        if (data.success) {
+          setMsg(msg, 'New code sent! Check your inbox.', 'success');
+          startResendTimer(60);
+        } else {
+          setMsg(msg, data.message, 'error');
+        }
+      } catch (e) {
+        setMsg(document.getElementById('msg-2'), 'Could not resend. Try again.', 'error');
+      }
+    }
+
+    function startResendTimer(seconds) {
+      clearResendTimer();
+      const btn   = document.getElementById('resend-btn');
+      const timer = document.getElementById('resend-timer');
+      let s = seconds;
+      btn.disabled = true;
+      timer.textContent = ` (${s}s)`;
+      resendInterval = setInterval(() => {
+        s--;
+        if (s <= 0) {
+          clearResendTimer();
+          btn.disabled = false;
+          timer.textContent = '';
+        } else {
+          timer.textContent = ` (${s}s)`;
+        }
+      }, 1000);
+    }
+
+    function clearResendTimer() {
+      if (resendInterval) { clearInterval(resendInterval); resendInterval = null; }
+    }
+
+    /* ── OTP digit keyboard navigation ─────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+      const digits = Array.from({ length: 6 }, (_, i) => document.getElementById('d' + i));
+
+      digits.forEach((inp, idx) => {
+        inp.addEventListener('input', e => {
+          inp.value = inp.value.replace(/\D/, '');
+          if (inp.value) {
+            inp.classList.add('filled');
+            if (idx < 5) digits[idx + 1].focus();
+          } else {
+            inp.classList.remove('filled');
+          }
+        });
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !inp.value && idx > 0) {
+            digits[idx - 1].focus();
+            digits[idx - 1].value = '';
+            digits[idx - 1].classList.remove('filled');
+          }
+          if (e.key === 'Enter') verifyOTP();
+        });
+        inp.addEventListener('paste', e => {
+          e.preventDefault();
+          const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+          text.split('').slice(0, 6).forEach((ch, i) => {
+            if (digits[i]) { digits[i].value = ch; digits[i].classList.add('filled'); }
+          });
+          if (text.length >= 6) digits[5].focus();
+        });
+      });
+
+      // Allow pressing Enter on email field to send OTP
+      document.getElementById('email-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendOTP(); }
+      });
+    });
+
+    /* ── Utility ────────────────────────────────────── */
+    function setMsg(el, text, type) {
+      el.textContent = text;
+      el.className = 'step-msg ' + (type || '');
+    }
+
+    /* ── Password toggle ────────────────────────────── */
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    /* ── Password confirmation check ────────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+      const pwd  = document.getElementById('password');
+      const cpwd = document.getElementById('confirm_password');
+      const msg  = document.getElementById('msg-3');
+      const form = document.getElementById('register-form');
+
+      cpwd.addEventListener('input', () => {
+        if (cpwd.value && pwd.value !== cpwd.value) {
+          setMsg(msg, 'Passwords do not match.', 'error');
+        } else if (cpwd.value && pwd.value === cpwd.value) {
+          setMsg(msg, 'Passwords match ✓', 'success');
+        } else {
+          setMsg(msg, '', '');
+        }
+      });
+
+      form.addEventListener('submit', e => {
+        if (pwd.value !== cpwd.value) {
+          e.preventDefault();
+          setMsg(msg, 'Passwords do not match.', 'error');
+        }
+      });
+    });
+
+    /* ── Google Sign-In ──────────────────────────────── */
+    async function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) {
+        alert('Google authentication could not be completed.');
+        return;
+      }
+      try {
+        const res  = await fetch('/auth/google/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = data.redirect || '/dashboard';
+        } else {
+          alert(data.message || 'Google registration failed.');
+        }
+      } catch (err) {
+        console.error('Google Sign Up Error:', err);
+        alert('Could not connect to authentication server. Please try again.');
+      }
+    }
+
+    /* ── CSS spinner keyframe ───────────────────────── */
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+    document.head.appendChild(styleEl);
+  </script>
+</body>
+</html>

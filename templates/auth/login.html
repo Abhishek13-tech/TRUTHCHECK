@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — TRUTHCHECK</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-simple.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Google Identity Services (Sign in with Google) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-box">
+
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-brand-logo">
+          <i data-lucide="shield-check" style="width: 26px; height: 26px;"></i>
+        </div>
+        <h1 class="auth-title">Welcome to TRUTHCHECK</h1>
+        <p class="auth-subtitle">Verify image and text authenticity with AI</p>
+      </div>
+
+      <!-- Flash / Error alerts -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
+              <i data-lucide="{{ 'alert-circle' if category == 'error' else 'check-circle' }}" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% if error %}
+        <div class="alert alert-danger">
+          <i data-lucide="alert-circle" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+          <span>{{ error }}</span>
+        </div>
+      {% endif %}
+
+      <!-- 1. Real Google Sign In (Choose Account Popup) -->
+      <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 0.5rem; min-height: 44px;">
+        <div id="g_id_onload"
+             data-client_id="{{ google_client_id }}"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="continue_with"
+             data-size="large"
+             data-logo_alignment="left"
+             data-width="390">
+        </div>
+      </div>
+
+      <div class="auth-divider">
+        <span>OR SIGN IN WITH EMAIL</span>
+      </div>
+
+      <!-- Email / Gmail ID & Password Form -->
+      <form action="{{ url_for('login') }}" method="POST" id="email-login-form">
+        <div class="form-group">
+          <label class="form-label" for="email">Gmail / Email Address</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="you@gmail.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 40px;">
+            <button type="button" onclick="togglePasswordVisibility('password', 'eye-icon-login')" title="Toggle password visibility" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; padding: 4px;">
+              <i data-lucide="eye" id="eye-icon-login" style="width: 18px; height: 18px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.85rem;">
+          <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-muted);">
+            <input type="checkbox" name="remember" checked>
+            Remember me (30 days)
+          </label>
+          <a href="{{ url_for('forgot_password') }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="signin-btn">
+          <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+          Sign In
+        </button>
+      </form>
+
+      <!-- Footer switch to Register -->
+      <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-muted);">
+        Don't have an account?
+        <a href="{{ url_for('register') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Create one free →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Toggle password show/hide
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    // Google Sign-In Credential Handler
+    async function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) {
+        alert('Google authentication could not be completed.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/auth/google/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          window.location.href = data.redirect || '/dashboard';
+        } else {
+          alert(data.message || 'Google authentication failed.');
+        }
+      } catch (err) {
+        console.error('Google Sign In Error:', err);
+        alert('Could not connect to authentication server. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>

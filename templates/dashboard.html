@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Hero Greeting Section -->
+<div class="hero-simple">
+  <div class="hero-tag">
+    <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+    <span>AI Authenticity Studio</span>
+  </div>
+  <h1 class="hero-title">
+    Welcome back, <span class="highlight">{{ current_user.get_display_name() }}</span>
+  </h1>
+  <p class="hero-desc">
+    Verify the credibility of media, detect synthetic deepfakes, and analyze text for AI-generated patterns with high precision.
+  </p>
+</div>
+
+<!-- Quick Stats Bar (Simple & Clean) -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+  
+  <div class="modern-card" style="padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+      <i data-lucide="check-circle" style="width: 22px; height: 22px;"></i>
+    </div>
+    <div>
+      <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); line-height: 1.2;">{{ stats.total_checks }}</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Total Checks</div>
+    </div>
+  </div>
+
+  <div class="modern-card" style="padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center;">
+      <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
+    </div>
+    <div>
+      <div style="font-size: 1.4rem; font-weight: 800; color: #065F46; line-height: 1.2;">{{ stats.authentic_count }}</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Authentic Content</div>
+    </div>
+  </div>
+
+  <div class="modern-card" style="padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--danger-light); color: var(--danger); display: flex; align-items: center; justify-content: center;">
+      <i data-lucide="alert-triangle" style="width: 22px; height: 22px;"></i>
+    </div>
+    <div>
+      <div style="font-size: 1.4rem; font-weight: 800; color: #991B1B; line-height: 1.2;">{{ stats.fake_count }}</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">AI / Manipulated</div>
+    </div>
+  </div>
+
+  <div class="modern-card" style="padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center;">
+      <i data-lucide="zap" style="width: 22px; height: 22px;"></i>
+    </div>
+    <div>
+      <div style="font-size: 1.4rem; font-weight: 800; color: #92400E; line-height: 1.2;">96.4%</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">AI Model Accuracy</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Primary Action Cards -->
+<div class="checker-grid">
+
+  <!-- Image Check Card -->
+  <a href="{{ url_for('image_check') }}" class="action-card image-card">
+    <div>
+      <div class="action-card-icon">
+        <i data-lucide="image" style="width: 28px; height: 28px;"></i>
+      </div>
+      <h2 class="action-card-title">Image Authenticity Check</h2>
+      <p class="action-card-desc">
+        Upload photos, memes, or screenshots to detect generative AI artifacts (Midjourney, DALL-E, Stable Diffusion) and deepfake face manipulations.
+      </p>
+    </div>
+    <div class="action-card-footer">
+      <span>Start Image Analysis</span>
+      <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+    </div>
+  </a>
+
+  <!-- Text Check Card -->
+  <a href="{{ url_for('text_check') }}" class="action-card text-card">
+    <div>
+      <div class="action-card-icon">
+        <i data-lucide="file-text" style="width: 28px; height: 28px;"></i>
+      </div>
+      <h2 class="action-card-title">Text & OCR Check</h2>
+      <p class="action-card-desc">
+        Paste text articles, social media captions, or upload document screenshots to extract text with OCR and analyze human vs AI generation probability.
+      </p>
+    </div>
+    <div class="action-card-footer" style="color: var(--success);">
+      <span>Start Text Analysis</span>
+      <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+    </div>
+  </a>
+
+</div>
+
+<!-- Recent Checks Activity Table -->
+<div class="modern-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div>
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">Recent Analysis Checks</h3>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">Your latest verification results saved automatically.</p>
+    </div>
+    <a href="{{ url_for('history') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.45rem 0.95rem;">
+      <i data-lucide="clock" style="width: 15px; height: 15px;"></i>
+      View Full History
+    </a>
+  </div>
+
+  {% if recent_checks %}
+    <div style="overflow-x: auto;">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Input Preview</th>
+            <th>Verdict</th>
+            <th>Confidence</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in recent_checks %}
+            <tr>
+              <td>
+                <span class="tag-badge" style="background: var(--bg-secondary); color: var(--text-main);">
+                  <i data-lucide="{{ 'image' if check.check_type == 'image' else 'file-text' }}" style="width: 13px; height: 13px;"></i>
+                  {{ check.check_type | capitalize }}
+                </span>
+              </td>
+              <td style="max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;">
+                {{ check.input_preview or check.image_filename or 'Uploaded Content' }}
+              </td>
+              <td>
+                {% if 'authentic' in check.verdict.lower() or 'human' in check.verdict.lower() or 'real' in check.verdict.lower() %}
+                  <span class="tag-badge tag-real">
+                    <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% else %}
+                  <span class="tag-badge tag-fake">
+                    <i data-lucide="alert-triangle" style="width: 13px; height: 13px;"></i>
+                    {{ check.verdict }}
+                  </span>
+                {% endif %}
+              </td>
+              <td style="font-weight: 700;">{{ check.score }}%</td>
+              <td style="color: var(--text-muted); font-size: 0.85rem;">{{ check.created_at.strftime('%b %d, %H:%M') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 2.5rem 1rem;">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--text-muted);">
+        <i data-lucide="inbox" style="width: 24px; height: 24px;"></i>
+      </div>
+      <h4 style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.25rem;">No checks yet</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Start by testing an image or text snippet above.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}
